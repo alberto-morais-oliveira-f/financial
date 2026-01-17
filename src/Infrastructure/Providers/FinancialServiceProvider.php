@@ -2,10 +2,13 @@
 
 namespace Am2tec\Financial\Infrastructure\Providers;
 
+use Am2tec\Financial\Domain\Contracts\CategoryRepositoryInterface;
 use Am2tec\Financial\Domain\Contracts\DreRepositoryInterface;
+use Am2tec\Financial\Domain\Services\CategoryService;
 use Am2tec\Financial\Domain\Services\DreService;
 use Am2tec\Financial\Domain\Services\WalletService;
 use Am2tec\Financial\Domain\Services\WebhookService;
+use Am2tec\Financial\Infrastructure\Persistence\Repositories\EloquentCategoryRepository;
 use Am2tec\Financial\Infrastructure\Persistence\Repositories\EloquentDreRepository;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Gate;
@@ -98,6 +101,7 @@ class FinancialServiceProvider extends ServiceProvider
 
     protected function registerRepositories(): void
     {
+        $this->app->bind(\Am2tec\Financial\Domain\Contracts\PaymentGatewayAdapter::class, \Am2tec\Financial\Infrastructure\Adapters\PagarmeAdapter::class);
         $this->app->bind(CurrencyResolver::class, ConfigCurrencyResolver::class);
         $this->app->bind(WalletRepositoryInterface::class, EloquentWalletRepository::class);
         $this->app->bind(TransactionRepositoryInterface::class, EloquentTransactionRepository::class);
@@ -106,6 +110,7 @@ class FinancialServiceProvider extends ServiceProvider
         $this->app->bind(RecurringScheduleRepositoryInterface::class, EloquentRecurringScheduleRepository::class);
         $this->app->bind(RefundRepositoryInterface::class, EloquentRefundRepository::class);
         $this->app->bind(DreRepositoryInterface::class, EloquentDreRepository::class);
+        $this->app->bind(CategoryRepositoryInterface::class, EloquentCategoryRepository::class);
     }
 
     protected function registerServices(): void
@@ -113,5 +118,6 @@ class FinancialServiceProvider extends ServiceProvider
         $this->app->singleton(DreService::class);
         $this->app->singleton(WalletService::class);
         $this->app->singleton(WebhookService::class);
+        $this->app->singleton(CategoryService::class);
     }
 }

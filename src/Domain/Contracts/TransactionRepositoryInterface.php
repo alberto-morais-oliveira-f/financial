@@ -6,6 +6,6 @@ use Am2tec\Financial\Domain\Entities\Transaction;
 
 interface TransactionRepositoryInterface
 {
-    public function save(Transaction $transaction): void;
+    public function save(Transaction $transaction): Transaction;
     public function findById(string $uuid): ?Transaction;
 }

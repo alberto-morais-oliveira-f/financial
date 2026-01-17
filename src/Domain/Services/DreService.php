@@ -12,28 +12,23 @@ class DreService
     {
     }
 
-    /**
-     * Gera a Demonstração do Resultado do Exercício (DRE) para um dado período.
-     *
-     * @param string $startDate
-     * @param string $endDate
-     * @return array{summary: array<string, float>, detailed: \Spatie\LaravelData\DataCollection<int, DreData>}
-     */
     public function generate(string $startDate, string $endDate): array
     {
         $dreRawData = $this->dreRepository->getDreData($startDate, $endDate);
 
-        // CORREÇÃO: Usar o método estático `collect` para criar uma coleção de DTOs
-        $detailed = DreData::collect($dreRawData);
+        // Agora DreData é uma classe PHP simples, usamos o método from() que criamos.
+        $detailedDtos = $dreRawData->map(function ($row) {
+            return DreData::from($row);
+        });
 
-        $groupedByType = $detailed->groupBy('category_type');
+        $groupedByType = $detailedDtos->groupBy('category_type');
 
         $totals = $groupedByType->map(fn (Collection $group) => $group->sum('total_amount'));
 
-        $revenue = (float) $totals->get('REVENUE', 0);
-        $costs = (float) $totals->get('COST', 0);
-        $expenses = (float) $totals->get('EXPENSE', 0);
-        $taxes = (float) $totals->get('TAX', 0);
+        $revenue = (float) $totals->get('revenue', 0);
+        $costs = (float) $totals->get('cost', 0);
+        $expenses = (float) $totals->get('expense', 0);
+        $taxes = (float) $totals->get('tax', 0);
 
         $grossProfit = $revenue - $costs;
         $operatingProfit = $grossProfit - $expenses - $taxes;
@@ -47,7 +42,8 @@ class DreService
                 'taxes' => $taxes,
                 'operating_profit' => $operatingProfit,
             ],
-            'detailed' => $detailed,
+            // Retornar a coleção de objetos DreData simples, que o Laravel serializará para JSON.
+            'detailed' => $detailedDtos->toArray(),
         ];
     }
 }

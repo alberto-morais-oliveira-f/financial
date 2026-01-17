@@ -2,57 +2,61 @@
 
 namespace Am2tec\Financial\Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Am2tec\Financial\Domain\Contracts\AccountOwner;
+use Am2tec\Financial\Domain\Entities\Transaction;
+use Am2tec\Financial\Domain\Exceptions\InsufficientFundsException;
+use Am2tec\Financial\Domain\Exceptions\WalletNotFoundException;
 use Am2tec\Financial\Domain\Services\TransactionService;
-use Am2tec\Financial\Domain\Services\WalletService;
 use Am2tec\Financial\Domain\ValueObjects\Currency;
-use Am2tec\Financial\Domain\ValueObjects\Money;
+use Am2tec\Financial\Domain\ValueObjects\Money; // CORREÇÃO
+use Am2tec\Financial\Infrastructure\Persistence\Models\WalletModel;
 use Am2tec\Financial\Tests\TestCase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class TransferTest extends TestCase
 {
     use RefreshDatabase;
 
+    private TransactionService $transactionService;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->transactionService = $this->app->make(TransactionService::class);
+        $this->currency = new Currency(config('financial.default_currency', 'BRL'));
+    }
+
+    /** @test */
     public function test_can_transfer_money_between_wallets()
     {
-        $walletService = app(WalletService::class);
-        $transactionService = app(TransactionService::class);
+        $wallet1 = WalletModel::factory()->create(['balance' => 10000]);
+        $wallet2 = WalletModel::factory()->create(['balance' => 5000]);
+        $amount = new Money(2000, $this->currency); // CORREÇÃO
 
-        // Create Owners (Mock)
-        $owner1 = new class implements AccountOwner {
-            public function getOwnerId(): string|int { return 'user-1'; }
-            public function getOwnerType(): string { return 'User'; }
-            public function getOwnerName(): string { return 'Alice'; }
-            public function getOwnerEmail(): ?string { return null; }
-        };
+        $transaction = $this->transactionService->transfer($wallet1->id, $wallet2->id, $amount, 'Test Transfer');
 
-        $owner2 = new class implements AccountOwner {
-            public function getOwnerId(): string|int { return 'user-2'; }
-            public function getOwnerType(): string { return 'User'; }
-            public function getOwnerName(): string { return 'Bob'; }
-            public function getOwnerEmail(): ?string { return null; }
-        };
+        $this->assertInstanceOf(Transaction::class, $transaction);
+        $this->assertDatabaseHas('fin_wallets', ['id' => $wallet1->id, 'balance' => 8000]);
+        $this->assertDatabaseHas('fin_wallets', ['id' => $wallet2->id, 'balance' => 7000]);
+    }
 
-        // Create Wallets
-        $wallet1 = $walletService->createWallet($owner1, 'Alice Wallet');
-        $wallet2 = $walletService->createWallet($owner2, 'Bob Wallet');
+    /** @test */
+    public function test_cannot_transfer_from_non_existent_wallet()
+    {
+        $this->expectException(WalletNotFoundException::class);
+        $wallet2 = WalletModel::factory()->create();
+        $amount = new Money(2000, $this->currency); // CORREÇÃO
 
-        // Initial Deposit (Hack for test: manually update balance)
-        // In real life we would have a "Deposit" transaction type
-        $wallet1->deposit(Money::of(1000, Currency::BRL()));
-        app(\Am2tec\Financial\Domain\Contracts\WalletRepositoryInterface::class)->save($wallet1);
+        $this->transactionService->transfer('non-existent-id', $wallet2->id, $amount, 'Test Transfer');
+    }
 
-        // Perform Transfer
-        $transactionService->transfer(
-            $wallet1->uuid,
-            $wallet2->uuid,
-            Money::of(200, Currency::BRL()),
-            'Payment for services'
-        );
+    /** @test */
+    public function test_cannot_transfer_with_insufficient_funds()
+    {
+        $this->expectException(InsufficientFundsException::class);
+        $wallet1 = WalletModel::factory()->create(['balance' => 1000]);
+        $wallet2 = WalletModel::factory()->create();
+        $amount = new Money(2000, $this->currency); // CORREÇÃO
 
-        // Assert Balances
-        $this->assertEquals(800, $walletService->getBalance($wallet1->uuid)->amount);
-        $this->assertEquals(200, $walletService->getBalance($wallet2->uuid)->amount);
+        $this->transactionService->transfer($wallet1->id, $wallet2->id, $amount, 'Test Transfer');
     }
 }

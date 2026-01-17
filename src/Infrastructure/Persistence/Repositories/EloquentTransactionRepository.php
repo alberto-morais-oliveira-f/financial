@@ -12,10 +12,11 @@ use Am2tec\Financial\Domain\ValueObjects\Currency;
 use Am2tec\Financial\Domain\ValueObjects\Money;
 use Am2tec\Financial\Infrastructure\Persistence\Models\EntryModel;
 use Am2tec\Financial\Infrastructure\Persistence\Models\TransactionModel;
+use RuntimeException;
 
 class EloquentTransactionRepository implements TransactionRepositoryInterface
 {
-    public function save(Transaction $transaction): void
+    public function save(Transaction $transaction): Transaction
     {
         DB::transaction(function () use ($transaction) {
             $model = TransactionModel::updateOrCreate(
@@ -43,6 +44,14 @@ class EloquentTransactionRepository implements TransactionRepositoryInterface
                 );
             }
         });
+
+        $savedTransaction = $this->findById($transaction->uuid);
+
+        if (!$savedTransaction) {
+            throw new RuntimeException("Failed to retrieve the transaction after saving.");
+        }
+
+        return $savedTransaction;
     }
 
     public function findById(string $uuid): ?Transaction

@@ -11,7 +11,10 @@ use Am2tec\Financial\Domain\Entities\Transaction;
 use Am2tec\Financial\Domain\Enums\EntryType;
 use Am2tec\Financial\Domain\Enums\TransactionStatus;
 use Am2tec\Financial\Domain\Events\TransactionPosted;
+use Am2tec\Financial\Domain\Exceptions\InsufficientFundsException;
+use Am2tec\Financial\Domain\Exceptions\WalletNotFoundException;
 use Am2tec\Financial\Domain\ValueObjects\Money;
+use RuntimeException;
 
 class TransactionService
 {
@@ -27,22 +30,18 @@ class TransactionService
             $toWallet = $this->walletRepository->findById($toWalletId);
 
             if (!$fromWallet || !$toWallet) {
-                throw new \InvalidArgumentException("One or both wallets not found.");
-            }
-
-            if (!$fromWallet->isActive() || !$toWallet->isActive()) {
-                throw new \DomainException("One or both wallets are not active.");
+                throw new WalletNotFoundException("One or both wallets not found.");
             }
 
             if ($fromWallet->balance->amount < $amount->amount) {
-                throw new \DomainException("Insufficient funds in source wallet.");
+                throw new InsufficientFundsException("Insufficient funds in source wallet.");
             }
 
-            $fromWallet->withdraw($amount);
-            $toWallet->deposit($amount);
+            $newFromWallet = $fromWallet->withdraw($amount);
+            $newToWallet = $toWallet->deposit($amount);
 
-            $this->walletRepository->save($fromWallet);
-            $this->walletRepository->save($toWallet);
+            $this->walletRepository->save($newFromWallet);
+            $this->walletRepository->save($newToWallet);
 
             $transaction = new Transaction(
                 uuid: Str::uuid()->toString(),
@@ -56,8 +55,8 @@ class TransactionService
                 walletId: $fromWallet->uuid,
                 type: EntryType::DEBIT,
                 amount: $amount,
-                beforeBalance: $fromWallet->balance->add($amount),
-                afterBalance: $fromWallet->balance
+                beforeBalance: $fromWallet->balance,
+                afterBalance: $newFromWallet->balance
             );
 
             $creditEntry = new Entry(
@@ -65,19 +64,28 @@ class TransactionService
                 walletId: $toWallet->uuid,
                 type: EntryType::CREDIT,
                 amount: $amount,
-                beforeBalance: $toWallet->balance->subtract($amount),
-                afterBalance: $toWallet->balance
+                beforeBalance: $toWallet->balance,
+                afterBalance: $newToWallet->balance
             );
 
             $transaction->addEntry($debitEntry);
             $transaction->addEntry($creditEntry);
 
-            $this->transactionRepository->save($transaction);
+            $savedTransaction = $this->transactionRepository->save($transaction);
 
-            return $transaction;
+            if (!$savedTransaction) {
+                throw new RuntimeException("Failed to save the transaction.");
+            }
+
+            TransactionPosted::dispatch($savedTransaction);
+
+            return $savedTransaction;
         });
 
-        TransactionPosted::dispatch($transaction);
+        if (!$transaction) {
+            // Isso pode acontecer se a transação do DB falhar e não lançar uma exceção.
+            throw new RuntimeException("The database transaction failed without throwing an exception.");
+        }
 
         return $transaction;
     }

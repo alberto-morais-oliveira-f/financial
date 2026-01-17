@@ -14,7 +14,7 @@ class WalletResource extends Data
         public string $name,
         public int $balance,
         public string $currency,
-        public string $status,
+        public string $status, // CORREÇÃO: Restaurado
     ) {}
 
     public static function fromEntity(Wallet $wallet): self
@@ -26,7 +26,7 @@ class WalletResource extends Data
             name: $wallet->name,
             balance: $wallet->balance->amount,
             currency: $wallet->balance->currency->code,
-            status: $wallet->status->value
+            status: $wallet->status->value // CORREÇÃO: Restaurado
         );
     }
 }

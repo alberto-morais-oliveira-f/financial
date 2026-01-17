@@ -20,7 +20,7 @@ class EloquentPaymentRepository implements PaymentRepositoryInterface
                 'gateway_transaction_id' => $payment->gatewayTransactionId,
                 'currency' => $payment->amount->currency->code,
                 'amount' => $payment->amount->amount,
-                'status' => $payment->status->value,
+                'status' => $payment->status,
                 'error_message' => $payment->errorMessage,
                 'created_at' => $payment->createdAt,
             ]
@@ -51,7 +51,7 @@ class EloquentPaymentRepository implements PaymentRepositoryInterface
             gateway: $model->gateway,
             gatewayTransactionId: $model->gateway_transaction_id,
             amount: new Money($model->amount, new Currency($model->currency)),
-            status: PaymentStatus::from($model->status),
+            status: $model->status,
             createdAt: \DateTimeImmutable::createFromMutable($model->created_at),
             errorMessage: $model->error_message
         );

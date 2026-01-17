@@ -3,61 +3,56 @@
 namespace Am2tec\Financial\Tests\Feature\Reports;
 
 use Am2tec\Financial\Infrastructure\Persistence\Models\Category;
-use Am2tec\Financial\Infrastructure\Persistence\Models\Entry;
-use Am2tec\Financial\Infrastructure\Persistence\Models\Transaction;
+use Am2tec\Financial\Infrastructure\Persistence\Models\EntryModel;
+use Am2tec\Financial\Infrastructure\Persistence\Models\TransactionModel;
+use Am2tec\Financial\Infrastructure\Persistence\Models\WalletModel;
 use Am2tec\Financial\Tests\TestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class DreReportTest extends TestCase
 {
-    use RefreshDatabase;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        // Rodar migrações para criar as tabelas necessárias
-        $this->artisan('migrate', ['--database' => 'testing'])->run();
-    }
-
     /** @test */
     public function it_can_generate_a_dre_report()
     {
         // 1. Arrange
-        // Criar categorias
-        $revenueCategory = Category::factory()->create(['type' => 'REVENUE', 'name' => 'Sales']);
-        $costCategory = Category::factory()->create(['type' => 'COST', 'name' => 'COGS']);
-        $expenseCategory = Category::factory()->create(['type' => 'EXPENSE', 'name' => 'Rent']);
+        $wallet = WalletModel::factory()->create();
+        $revenueCategory = Category::factory()->create(['type' => 'revenue', 'name' => 'Sales']);
+        $costCategory = Category::factory()->create(['type' => 'cost', 'name' => 'COGS']);
+        $expenseCategory = Category::factory()->create(['type' => 'expense', 'name' => 'Rent']);
 
         // Criar transações e lançamentos
-        $transaction1 = Transaction::factory()->create(['status' => 'POSTED', 'updated_at' => '2024-01-15 10:00:00']);
-        Entry::factory()->create([
+        $transaction1 = TransactionModel::factory()->create(['status' => 'POSTED', 'updated_at' => '2024-01-15 10:00:00']);
+        EntryModel::factory()->create([
+            'wallet_id' => $wallet->id,
             'transaction_id' => $transaction1->id,
-            'category_id' => $revenueCategory->id,
+            'category_uuid' => $revenueCategory->uuid,
             'type' => 'credit',
-            'amount' => 10000, // R$ 100,00
+            'amount' => 10000,
         ]);
 
-        $transaction2 = Transaction::factory()->create(['status' => 'POSTED', 'updated_at' => '2024-01-16 11:00:00']);
-        Entry::factory()->create([
+        $transaction2 = TransactionModel::factory()->create(['status' => 'POSTED', 'updated_at' => '2024-01-16 11:00:00']);
+        EntryModel::factory()->create([
+            'wallet_id' => $wallet->id,
             'transaction_id' => $transaction2->id,
-            'category_id' => $costCategory->id,
+            'category_uuid' => $costCategory->uuid,
             'type' => 'debit',
-            'amount' => 4000, // R$ 40,00
+            'amount' => 4000,
         ]);
 
-        $transaction3 = Transaction::factory()->create(['status' => 'POSTED', 'updated_at' => '2024-01-17 12:00:00']);
-        Entry::factory()->create([
+        $transaction3 = TransactionModel::factory()->create(['status' => 'POSTED', 'updated_at' => '2024-01-17 12:00:00']);
+        EntryModel::factory()->create([
+            'wallet_id' => $wallet->id,
             'transaction_id' => $transaction3->id,
-            'category_id' => $expenseCategory->id,
+            'category_uuid' => $expenseCategory->uuid,
             'type' => 'debit',
-            'amount' => 1500, // R$ 15,00
+            'amount' => 1500,
         ]);
         
         // Transação fora do período
-        $transaction4 = Transaction::factory()->create(['status' => 'POSTED', 'updated_at' => '2024-02-01 10:00:00']);
-        Entry::factory()->create([
+        $transaction4 = TransactionModel::factory()->create(['status' => 'POSTED', 'updated_at' => '2024-02-01 10:00:00']);
+        EntryModel::factory()->create([
+            'wallet_id' => $wallet->id,
             'transaction_id' => $transaction4->id,
-            'category_id' => $revenueCategory->id,
+            'category_uuid' => $revenueCategory->uuid,
             'type' => 'credit',
             'amount' => 5000,
         ]);
@@ -92,12 +87,12 @@ class DreReportTest extends TestCase
 
         $response->assertJsonFragment([
             'summary' => [
-                'revenue' => 10000,
-                'costs' => 4000,
-                'gross_profit' => 6000, // 10000 - 4000
-                'expenses' => 1500,
-                'taxes' => 0,
-                'operating_profit' => 4500, // 6000 - 1500
+                'revenue' => 10000.0,
+                'costs' => 4000.0,
+                'gross_profit' => 6000.0,
+                'expenses' => 1500.0,
+                'taxes' => 0.0,
+                'operating_profit' => 4500.0,
             ]
         ]);
     }

@@ -1,5 +1,6 @@
 <?php
 
+use Am2tec\Financial\Application\Api\Controllers\CategoryController;
 use Am2tec\Financial\Application\Api\Controllers\DreController;
 use Illuminate\Support\Facades\Route;
 use Am2tec\Financial\Application\Api\Controllers\PaymentController;
@@ -21,3 +22,6 @@ Route::post('/webhooks/{gateway}', [WebhookController::class, 'handle']);
 
 // Report Routes
 Route::get('/reports/dre', [DreController::class, 'show'])->name('financial.reports.dre.show');
+
+// Category Routes
+Route::get('/categories', [CategoryController::class, 'index']);

@@ -3,52 +3,53 @@
 namespace Am2tec\Financial\Infrastructure\Persistence\Repositories;
 
 use Am2tec\Financial\Domain\Contracts\DreRepositoryInterface;
-use Am2tec\Financial\Domain\Enums\CategoryType;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class EloquentDreRepository implements DreRepositoryInterface
 {
-    /**
-     * {@inheritdoc}
-     */
     public function getDreData(string $startDate, string $endDate): Collection
     {
-        $entriesTable = config('financial.table_prefix', 'fin_') . 'entries';
-        $transactionsTable = config('financial.table_prefix', 'fin_') . 'transactions';
-        $categoriesTable = config('financial.table_prefix', 'fin_') . 'categories';
+        $prefix = config('financial.table_prefix', 'fin_');
+        $entriesTable = $prefix . 'entries';
+        $transactionsTable = $prefix . 'transactions';
+        $categoriesTable = $prefix . 'categories';
 
-        return DB::table("{$entriesTable} as e")
-            ->join("{$transactionsTable} as t", 'e.transaction_id', '=', 't.id')
-            // CORREÇÃO: Join usando UUIDs
-            ->join("{$categoriesTable} as c", 'e.category_uuid', '=', 'c.uuid')
-            ->select([
-                // CORREÇÃO: Selecionando UUIDs e mantendo os aliases
-                'c.uuid as category_id',
-                'c.name as category_name',
-                'c.type as category_type',
-                'c.parent_uuid as parent_id',
-                DB::raw("SUM(
+        // A conversão para REAL/FLOAT pode variar um pouco entre bancos de dados,
+        // mas CAST(... AS REAL) é bem padrão para SQLite e outros.
+        $query = "
+            SELECT
+                c.uuid AS category_id,
+                c.name AS category_name,
+                c.type AS category_type,
+                c.parent_uuid AS parent_id,
+                CAST(COALESCE(SUM(
                     CASE
-                        WHEN c.type = 'REVENUE' THEN
+                        WHEN c.type = 'revenue' THEN
                             CASE WHEN e.type = 'credit' THEN e.amount ELSE -e.amount END
-                        WHEN c.type IN ('COST', 'EXPENSE', 'TAX') THEN
+                        WHEN c.type IN ('cost', 'expense', 'tax') THEN
                             CASE WHEN e.type = 'debit' THEN e.amount ELSE -e.amount END
                         ELSE 0
                     END
-                ) as total_amount")
-            ])
-            ->where('t.status', 'POSTED')
-            ->whereIn('c.type', [
-                CategoryType::REVENUE->value,
-                CategoryType::COST->value,
-                CategoryType::EXPENSE->value,
-                CategoryType::TAX->value,
-            ])
-            ->whereBetween('t.updated_at', [$startDate, $endDate])
-            // CORREÇÃO: Agrupando por UUIDs
-            ->groupBy('c.uuid', 'c.name', 'c.type', 'c.parent_uuid')
-            ->orderBy('c.type')
-            ->get();
+                ), 0) AS REAL) AS total_amount
+            FROM
+                {$entriesTable} AS e
+            JOIN
+                {$transactionsTable} AS t ON e.transaction_id = t.id
+            JOIN
+                {$categoriesTable} AS c ON e.category_uuid = c.uuid
+            WHERE
+                t.status = 'POSTED'
+                AND c.type IN ('revenue', 'cost', 'expense', 'tax')
+                AND t.updated_at BETWEEN ? AND ?
+            GROUP BY
+                c.uuid, c.name, c.type, c.parent_uuid
+            ORDER BY
+                c.type;
+        ";
+
+        $results = DB::select($query, [$startDate, $endDate]);
+
+        return collect($results);
     }
 }
