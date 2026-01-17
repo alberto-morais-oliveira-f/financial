@@ -17,13 +17,14 @@ class DreService
      *
      * @param string $startDate
      * @param string $endDate
-     * @return array{summary: array<string, float>, detailed: Collection<int, DreData>}
+     * @return array{summary: array<string, float>, detailed: \Spatie\LaravelData\DataCollection<int, DreData>}
      */
     public function generate(string $startDate, string $endDate): array
     {
         $dreRawData = $this->dreRepository->getDreData($startDate, $endDate);
 
-        $detailed = DreData::collection($dreRawData);
+        // CORREÇÃO: Usar o método estático `collect` para criar uma coleção de DTOs
+        $detailed = DreData::collect($dreRawData);
 
         $groupedByType = $detailed->groupBy('category_type');
 
