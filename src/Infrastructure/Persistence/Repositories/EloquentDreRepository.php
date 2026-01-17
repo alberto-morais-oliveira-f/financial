@@ -20,12 +20,14 @@ class EloquentDreRepository implements DreRepositoryInterface
 
         return DB::table("{$entriesTable} as e")
             ->join("{$transactionsTable} as t", 'e.transaction_id', '=', 't.id')
-            ->join("{$categoriesTable} as c", 'e.category_id', '=', 'c.id')
+            // CORREÇÃO: Join usando UUIDs
+            ->join("{$categoriesTable} as c", 'e.category_uuid', '=', 'c.uuid')
             ->select([
-                'c.id as category_id',
+                // CORREÇÃO: Selecionando UUIDs e mantendo os aliases
+                'c.uuid as category_id',
                 'c.name as category_name',
                 'c.type as category_type',
-                'c.parent_id',
+                'c.parent_uuid as parent_id',
                 DB::raw("SUM(
                     CASE
                         WHEN c.type = 'REVENUE' THEN
@@ -44,7 +46,8 @@ class EloquentDreRepository implements DreRepositoryInterface
                 CategoryType::TAX->value,
             ])
             ->whereBetween('t.updated_at', [$startDate, $endDate])
-            ->groupBy('c.id', 'c.name', 'c.type', 'c.parent_id')
+            // CORREÇÃO: Agrupando por UUIDs
+            ->groupBy('c.uuid', 'c.name', 'c.type', 'c.parent_uuid')
             ->orderBy('c.type')
             ->get();
     }
