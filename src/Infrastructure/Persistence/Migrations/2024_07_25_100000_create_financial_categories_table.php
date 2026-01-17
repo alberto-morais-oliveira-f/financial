@@ -12,13 +12,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('financial_categories', function (Blueprint $table) {
+        Schema::create(config('financial.table_prefix', 'fin_') . 'categories', function (Blueprint $table) {
             // O UUID é a chave primária para garantir que seja único em sistemas distribuídos.
             $table->uuid('uuid')->primary();
 
             // Chave estrangeira para a própria tabela, permitindo uma estrutura de árvore (pai/filho).
             // É nullable para permitir categorias raiz (sem pai).
-            $table->foreignUuid('parent_uuid')->nullable()->constrained('financial_categories', 'uuid')->nullOnDelete();
+            $table->foreignUuid('parent_uuid')->nullable()->constrained(config('financial.table_prefix', 'fin_') . 'categories', 'uuid')->nullOnDelete();
 
             // Nome legível da categoria. Ex: "Despesas com Marketing".
             $table->string('name');
@@ -52,6 +52,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('financial_categories');
+        Schema::dropIfExists(config('financial.table_prefix', 'fin_') . 'categories');
     }
 };
