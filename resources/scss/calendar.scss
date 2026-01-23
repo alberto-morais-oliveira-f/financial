@@ -1,0 +1,180 @@
+/* Estilos gerais do calendário */
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 10px;
+  background-color: #f0f0f0;
+  border-radius: 8px;
+}
+
+.calendar-title {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin-top: 6px;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  margin-bottom: 20px; /* Espaço entre os grids de meses */
+}
+
+.calendar-weekday {
+  text-align: center;
+  font-weight: bold;
+  padding: 10px 0;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+}
+
+.calendar-day {
+  border: 1px solid #eee;
+  border-radius: 4px;
+  min-height: 120px; /* Altura mínima para cada dia */
+  padding: 5px;
+  background-color: #fff;
+  position: relative;
+  overflow: hidden; /* Para esconder o scrollbar se houver muitos treinos */
+  display: flex; /* Para alinhar o número do dia e os treinos */
+  flex-direction: column;
+}
+
+.calendar-day.today {
+  border: 2px solid #ffca00;
+  background-color: #fffbe6;
+}
+
+.calendar-day.other-period { /* Estilo para dias fora do período selecionado */
+  background-color: #f9f9f9;
+  color: #ccc;
+}
+
+.day-number {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-bottom: 5px;
+  text-align: right;
+  padding-right: 5px;
+  flex-shrink: 0; /* Não encolher */
+}
+
+.day-trainings {
+  max-height: 80px; /* Altura máxima para os treinos dentro do dia */
+  overflow-y: auto; /* Adiciona scroll se houver muitos treinos */
+  padding-right: 5px; /* Espaço para o scrollbar */
+  flex-grow: 1; /* Ocupar o espaço restante */
+}
+
+.training-item {
+  background-color: #007bff;
+  color: #fff;
+  border-radius: 3px;
+  padding: 3px 5px;
+  margin-bottom: 3px;
+  font-size: 0.8em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  text-decoration: none;
+  display: block; /* Para que o link ocupe todo o espaço */
+}
+
+.training-item:hover {
+  background-color: #0056b3;
+}
+
+.training-item strong {
+  display: block;
+}
+
+.filter-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.filter-controls .form-group {
+  margin-bottom: 0;
+}
+
+.month-title {
+  font-size: 1.3em;
+  font-weight: bold;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  text-align: center;
+  background-color: #e9ecef;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+/* Estilos para a visualização de semana (7_days) e 4 dias (4_days) */
+.day-view-grid, .four-days-view-grid, .week-view-grid {
+  display: grid;
+  gap: 5px;
+  margin-bottom: 20px;
+}
+
+.day-view-grid {
+  grid-template-columns: 1fr; /* Uma coluna para o dia */
+}
+
+.four-days-view-grid {
+  grid-template-columns: repeat(4, 1fr); /* Quatro colunas para 4 dias */
+}
+
+.week-view-grid {
+  grid-template-columns: repeat(7, 1fr); /* Sete colunas para a semana */
+}
+
+.day-column {
+  border: 1px solid #eee;
+  border-radius: 4px;
+  min-height: 400px; /* Altura mínima para a coluna do dia */
+  padding: 5px;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+.day-column-header {
+  text-align: center;
+  font-weight: bold;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 5px;
+}
+
+.day-column-header.today {
+  background-color: #ffca00;
+  color: #000;
+  border-radius: 4px;
+}
+
+.day-column-trainings {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+.day-column-trainings .training-item {
+  margin-bottom: 5px;
+}
+
+.day-column-trainings .no-trainings {
+  font-size: 0.8em;
+  color: #666;
+  text-align: center;
+  margin-top: 10px;
+}
+
+#period-select {
+  padding: 0.5em;
+}

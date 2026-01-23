@@ -2,21 +2,13 @@
 
 namespace Am2tec\Financial\Infrastructure\Providers;
 
+use Am2tec\Financial\Application\Services\CategoryService;
+use Am2tec\Financial\Application\Services\DreService;
+use Am2tec\Financial\Application\Services\WalletService;
+use Am2tec\Financial\Application\Services\WebhookService;
 use Am2tec\Financial\Domain\Contracts\CategoryRepositoryInterface;
-use Am2tec\Financial\Domain\Contracts\DreRepositoryInterface;
-use Am2tec\Financial\Domain\Services\CategoryService;
-use Am2tec\Financial\Domain\Services\DreService;
-use Am2tec\Financial\Domain\Services\WalletService;
-use Am2tec\Financial\Domain\Services\WebhookService;
-use Am2tec\Financial\Infrastructure\Persistence\Repositories\EloquentCategoryRepository;
-use Am2tec\Financial\Infrastructure\Persistence\Repositories\EloquentDreRepository;
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\ServiceProvider;
-use Am2tec\Financial\Application\Api\Policies\TransactionPolicy;
-use Am2tec\Financial\Application\Api\Policies\WalletPolicy;
 use Am2tec\Financial\Domain\Contracts\CurrencyResolver;
+use Am2tec\Financial\Domain\Contracts\DreRepositoryInterface;
 use Am2tec\Financial\Domain\Contracts\PaymentRepositoryInterface;
 use Am2tec\Financial\Domain\Contracts\RecurringScheduleRepositoryInterface;
 use Am2tec\Financial\Domain\Contracts\RefundRepositoryInterface;
@@ -25,14 +17,22 @@ use Am2tec\Financial\Domain\Contracts\TransactionRepositoryInterface;
 use Am2tec\Financial\Domain\Contracts\WalletRepositoryInterface;
 use Am2tec\Financial\Domain\Entities\Transaction;
 use Am2tec\Financial\Domain\Entities\Wallet;
-use Am2tec\Financial\Infrastructure\Console\ProcessRecurringSchedules;
+use Am2tec\Financial\Infrastructure\Adapters\ConfigCurrencyResolver;
+use Am2tec\Financial\Infrastructure\Persistence\Repositories\EloquentCategoryRepository;
+use Am2tec\Financial\Infrastructure\Persistence\Repositories\EloquentDreRepository;
 use Am2tec\Financial\Infrastructure\Persistence\Repositories\EloquentPaymentRepository;
 use Am2tec\Financial\Infrastructure\Persistence\Repositories\EloquentRecurringScheduleRepository;
 use Am2tec\Financial\Infrastructure\Persistence\Repositories\EloquentRefundRepository;
 use Am2tec\Financial\Infrastructure\Persistence\Repositories\EloquentTitleRepository;
 use Am2tec\Financial\Infrastructure\Persistence\Repositories\EloquentTransactionRepository;
 use Am2tec\Financial\Infrastructure\Persistence\Repositories\EloquentWalletRepository;
-use Am2tec\Financial\Infrastructure\Support\ConfigCurrencyResolver;
+use Am2tec\Financial\Infrastructure\Policies\TransactionPolicy;
+use Am2tec\Financial\Infrastructure\Policies\WalletPolicy;
+use Am2tec\Financial\Infrastructure\Console\Commands\ProcessRecurringSchedules;
+use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\ServiceProvider;
 
 class FinancialServiceProvider extends ServiceProvider
 {
@@ -52,6 +52,16 @@ class FinancialServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/../../Config/financial.php' => config_path('financial.php'),
         ], 'financial-config');
+
+        $this->loadViewsFrom(__DIR__ . '/../../../resources/views', 'financial');
+
+        $this->publishes([
+            __DIR__ . '/../../../resources/views' => resource_path('views/vendor/financial'),
+        ], 'financial-views');
+
+        $this->publishes([
+            __DIR__ . '/../../../resources/assets' => public_path('vendor/financial'),
+        ], 'financial-assets');
 
         $this->loadMigrationsFrom(__DIR__ . '/../Persistence/Migrations');
 
