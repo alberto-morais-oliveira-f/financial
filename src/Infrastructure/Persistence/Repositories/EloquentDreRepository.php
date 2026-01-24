@@ -5,6 +5,7 @@ namespace Am2tec\Financial\Infrastructure\Persistence\Repositories;
 use Am2tec\Financial\Domain\Contracts\DreRepositoryInterface;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class EloquentDreRepository implements DreRepositoryInterface
 {
@@ -13,7 +14,15 @@ class EloquentDreRepository implements DreRepositoryInterface
         $prefix = config('financial.table_prefix', 'fin_');
         $entriesTable = $prefix . 'entries';
         $transactionsTable = $prefix . 'transactions';
-        $categoriesTable = $prefix . 'categories';
+        // CORREÇÃO: A tabela de categorias tem nome fixo 'financial_categories'
+        $categoriesTable = 'fin_categories';
+
+        // Verifica se a coluna category_uuid existe na tabela de entries
+        // Se não existir, provavelmente a migração não rodou ou falhou silenciosamente
+        // Nesse caso, retornamos uma coleção vazia para evitar erro 500
+        if (!Schema::hasColumn($entriesTable, 'category_uuid')) {
+            return collect([]);
+        }
 
         // A conversão para REAL/FLOAT pode variar um pouco entre bancos de dados,
         // mas CAST(... AS REAL) é bem padrão para SQLite e outros.

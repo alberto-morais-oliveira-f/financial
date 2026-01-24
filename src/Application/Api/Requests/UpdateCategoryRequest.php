@@ -16,7 +16,7 @@ class UpdateCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'parent_uuid' => ['nullable', 'uuid', 'exists:financial_categories,uuid'],
+            'parent_uuid' => ['nullable', 'uuid', 'exists:fin_categories,uuid'],
             'name' => ['sometimes', 'string', 'max:255'],
             'type' => ['sometimes', new Enum(CategoryType::class)],
             'description' => ['nullable', 'string'],

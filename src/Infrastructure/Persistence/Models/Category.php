@@ -12,7 +12,7 @@ class Category extends Model
 {
     use HasUuids;
 
-    protected $table = 'financial_categories';
+    protected $table = 'fin_categories';
     protected $primaryKey = 'uuid';
     public $incrementing = false;
     protected $keyType = 'string';
@@ -30,6 +30,12 @@ class Category extends Model
         'type' => CategoryType::class,
         'is_system_category' => 'boolean',
     ];
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+        $this->table = config('financial.table_prefix', 'fin_') . 'categories';
+    }
 
     public function parent(): BelongsTo
     {

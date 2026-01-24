@@ -9,49 +9,62 @@
             @if ($title !== '')
                 {{$title}}
             @else
-                Financial Module
+                Eduardo Gordin - BJJ
             @endif
         @endisset
     </title>
-    <link rel="icon" type="image/x-icon" href="{{ asset('vendor/financial/images/favicon.ico') }}"/>
+    <link rel="icon" type="image/x-icon" href="{{Vite::asset('resources/images/favicon.ico')}}"/>
 
-    <!-- Loader -->
-    <link href="{{ asset('vendor/financial/css/light-loader.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('vendor/financial/css/dark-loader.css') }}" rel="stylesheet" type="text/css" />
-    <script src="{{ asset('vendor/financial/js/loader.js') }}"></script>
+    @vite(['resources/scss/layouts/modern-light-menu/light/loader.scss'])
+    @vite(['resources/scss/layouts/modern-light-menu/dark/loader.scss'])
+    @vite(['resources/layouts/modern-light-menu/loader.js'])
+
+    @vite(['resources/scss/light/assets/components/font-icons.scss'])
+    @vite(['resources/scss/dark/assets/components/font-icons.scss'])
+
+
 
     <!-- BEGIN GLOBAL MANDATORY STYLES -->
     <link href="https://fonts.googleapis.com/css?family=Nunito:400,600,700" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('vendor/financial/plugins/bootstrap/css/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('vendor/financial/plugins/notification/snackbar/snackbar.min.css') }}">
+    <link rel="stylesheet" href="{{asset('plugins/src/bootstrap/css/bootstrap.min.css')}}">
+    <link rel="stylesheet" href="{{asset('plugins/src/notification/snackbar/snackbar.min.css')}}">
+    @vite(['resources/scss/light/assets/main.scss'])
+    @vite(['resources/scss/dark/assets/main.scss'])
+    @vite(['resources/scss/light/plugins/perfect-scrollbar/perfect-scrollbar.scss'])
+    @vite(['resources/scss/dark/plugins/perfect-scrollbar/perfect-scrollbar.scss'])
 
-    <!-- Main CSS -->
-    <link href="{{ asset('vendor/financial/css/light-main.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('vendor/financial/css/dark-main.css') }}" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="{{asset('plugins/src/waves/waves.min.css')}}">
+    @vite(['resources/scss/layouts/modern-light-menu/light/structure.scss'])
+    @vite(['resources/scss/layouts/modern-light-menu/dark/structure.scss'])
+    <link rel="stylesheet" href="{{asset('plugins/src/highlight/styles/monokai-sublime.css')}}">
+    @vite(['resources/scss/light/assets/elements/custom-pagination.scss', 'resources/scss/dark/assets/elements/custom-pagination.scss'])
+    @vite(['resources/scss/light/plugins/notification/snackbar/custom-snackbar.scss'])
 
-    <link href="{{ asset('vendor/financial/css/light-structure.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('vendor/financial/css/dark-structure.css') }}" rel="stylesheet" type="text/css" />
-
-    <link href="{{ asset('vendor/financial/css/perfect-scrollbar.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('vendor/financial/css/monokai-sublime.css') }}" rel="stylesheet" type="text/css" />
-
-    <link rel="stylesheet" href="{{ asset('vendor/financial/plugins/waves/waves.min.css') }}">
-
-    <!-- Custom Styles -->
-    <link href="{{ asset('vendor/financial/css/custom-pagination.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('vendor/financial/css/custom-snackbar.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('vendor/financial/css/my.css') }}" rel="stylesheet" type="text/css" />
+    @vite(['resources/scss/my.scss'])
 
     <style>
-        body:not(.dark) .logo-light { display: block; }
-        body:not(.dark) .logo-dark { display: none; }
-        body.dark .logo-light { display: none; }
-        body.dark .logo-dark { display: block; }
+        body:not(.dark) .logo-light {
+            display: block;
+        }
+
+        body:not(.dark) .logo-dark {
+            display: none;
+        }
+
+        body.dark .logo-light {
+            display: none;
+        }
+
+        body.dark .logo-dark {
+            display: block;
+        }
     </style>
+
 
     @isset($scrollspy)
         @if ($scrollspy)
-            <link href="{{ asset('vendor/financial/css/scrollspyNav.css') }}" rel="stylesheet" type="text/css" />
+            @vite(['resources/scss/light/assets/scrollspyNav.scss'])
+            @vite(['resources/scss/dark/assets/scrollspyNav.scss'])
         @endif
     @endisset
     <!-- END GLOBAL MANDATORY STYLES -->
@@ -59,6 +72,7 @@
     <!-- BEGIN PAGE LEVEL PLUGINS/CUSTOM STYLES -->
     @yield('styles')
     <!-- END PAGE LEVEL PLUGINS/CUSTOM STYLES -->
+    @vite('resources/js/laravel-app.js')
 </head>
 <body class="{{ Request::routeIs('error404') ? 'error text-center' : '' }}
     {{ Request::routeIs('maintenance') ? 'maintanence text-center' : '' }}
@@ -78,6 +92,8 @@
     }}
     {{ Request::routeIs('collapsed') ? 'alt-menu' : '' }}" layout="{{ Request::routeIs('boxed') ? 'boxed' : '' }}">
 @yield('body-scripts')
+<!-- BEGIN LOADER -->
+<!--  END LOADER -->
 
 @isset($simplePage)
 
@@ -89,7 +105,7 @@
 
         @if (!Request::routeIs('blank'))
             <!--  BEGIN NAVBAR  -->
-            @include('financial::layouts.navbar')
+            @include('layouts.navbar')
             <!--  END NAVBAR  -->
         @endif
 
@@ -101,7 +117,7 @@
 
             @if (!Request::routeIs('blank'))
                 <!--  BEGIN SIDEBAR  -->
-                @include('financial::layouts.sidebar')
+                @include('layouts.sidebar')
                 <!--  END SIDEBAR  -->
             @endif
 
@@ -116,7 +132,7 @@
                                 <div class="middle-content container-xxl p-0">
 
                                     <!--  BEGIN BREADCRUMBS  -->
-                                    @include('financial::layouts.secondaryNav')
+                                    @include('layouts.secondaryNav')
                                     <!--  END BREADCRUMBS  -->
 
                                     <!--  BEGIN CONTENT  -->
@@ -130,21 +146,9 @@
                         <div class="layout-px-spacing">
                             <div class="middle-content {{ Request::routeIs('boxed') ? 'container-xxl' : '' }} p-0">
                                 @if ($noShowBreadCrumb === false)
-                                    <div class="row">
-                                        <div class="page-meta mb-4">
-                                            <nav class="breadcrumb-style-one d-inline-block mt-2"
-                                                 aria-label="breadcrumb">
-                                                <ol class="breadcrumb">
-                                                    <li class="breadcrumb-item"><a href="#">{{$title ?? ''}}</a></li>
-                                                </ol>
-                                            </nav>
-                                            @yield('btn_create')
-                                        </div>
-                                    </div>
-
                                     @if ((! Request::routeIs('blank')))
                                         <!--  BEGIN BREADCRUMBS  -->
-                                        @include('financial::layouts.secondaryNav')
+                                        @include('layouts.secondaryNav')
                                         <!--  END BREADCRUMBS  -->
                                     @endif
                                 @endif
@@ -161,7 +165,7 @@
 
                 @if (!Request::routeIs('blank'))
                     <!--  BEGIN FOOTER  -->
-                    @include('financial::layouts.footer')
+                    @include('layouts.footer')
                     <!--  END FOOTER  -->
                 @endif
             </div>
@@ -175,19 +179,19 @@
 @endisset
 
 <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
-<script src="{{ asset('vendor/financial/plugins/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
-<script src="{{ asset('vendor/financial/plugins/mousetrap/mousetrap.min.js') }}"></script>
-<script src="{{ asset('vendor/financial/plugins/waves/waves.min.js') }}"></script>
-<script src="{{ asset('vendor/financial/plugins/highlight/highlight.pack.js') }}"></script>
-<script src="{{ asset('vendor/financial/plugins/notification/snackbar/snackbar.min.js') }}"></script>
-<script src="{{ asset('vendor/financial/plugins/notify/bootstrap-notify.min.js') }}"></script>
+<script src="{{asset('plugins/src/perfect-scrollbar/perfect-scrollbar.min.js')}}"></script>
+<script src="{{asset('plugins/src/mousetrap/mousetrap.min.js')}}"></script>
+<script src="{{asset('plugins/src/waves/waves.min.js')}}"></script>
+<script src="{{asset('plugins/src/highlight/highlight.pack.js')}}"></script>
+<script src="{{asset('plugins/src/notification/snackbar/snackbar.min.js')}}"></script>
+<script type="module" src="{{asset('plugins/src/notify/bootstrap-notify.min.js')}}"></script>
 
-<script src="{{ asset('vendor/financial/js/custom-snackbar.js') }}"></script>
-<script src="{{ asset('vendor/financial/js/app.js') }}"></script>
+@vite(['resources/js/components/notification/custom-snackbar.js'])
+@vite(['resources/layouts/vertical-light-menu/app.js'])
 
 @isset($scrollspy)
     @if ($scrollspy)
-        <script src="{{ asset('vendor/financial/js/scrollspyNav.js') }}"></script>
+        @vite(['resources/js/scrollspyNav.js'])
     @endif
 @endisset
 
@@ -203,13 +207,88 @@
     @php
         $errors = collect([session()->get('error')]);
     @endphp
-    <script>
-        // Notification logic
+    <script type="module">
+        @foreach($errors->all() as $key => $error)
+        $.notify({
+                title: '',
+                message: '{{$error}}',
+            },
+            {
+                type: 'danger',
+                allow_dismiss: false,
+                newest_on_top: false,
+                mouse_over: false,
+                showProgressbar: false,
+                spacing: 10,
+                timer: 50000,
+                placement: {
+                    from: 'top',
+                    align: 'right'
+                },
+                offset: {
+                    x: 30,
+                    y: 30
+                },
+                delay: 1000,
+                z_index: 10000,
+                allow_dismiss: true,
+                animate: {
+                    enter: 'animated bounce',
+                    exit: 'animated bounce'
+                }
+            });
+        @endforeach
     </script>
 @endif
+@if(Session::has('message'))
+    @foreach(Session::get('message') as $key => $text)
+        <script type="module">
+            $.notify({
+                    title: '',
+                    message: '{{$text}}',
+                },
+                {
+                    @switch($key)
+                            @case('success')
+                    type: 'success',
+                    @break
+                            @case('error')
+                    type: 'danger',
+                    @break
+                            @case('alert')
+                    type: 'warning',
+                    @break
+                            @case('info')
+                    type: 'info',
+                    @break
+                            @endswitch
+                    allow_dismiss: false,
+                    newest_on_top: false,
+                    mouse_over: false,
+                    showProgressbar: false,
+                    spacing: 10,
+                    timer: 2000,
+                    placement: {
+                        from: 'top',
+                        align: 'right'
+                    },
+                    offset: {
+                        x: 30,
+                        y: 30
+                    },
+                    delay: 1000,
+                    z_index: 10000,
+                    animate: {
+                        enter: 'animated bounce',
+                        exit: 'animated bounce'
+                    }
+                });
+        </script>
+    @endforeach
+@endif
 
-<script src="{{ asset('vendor/financial/plugins/font-icons/feather/feather.min.js') }}"></script>
-<script>
+<script type="module" src="{{asset('plugins/src/font-icons/feather/feather.min.js')}}"></script>
+<script type="module">
     feather.replace();
 </script>
 @livewire('bootstrap-modal')

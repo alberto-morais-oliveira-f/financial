@@ -16,7 +16,7 @@ class StoreCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'parent_uuid' => ['nullable', 'uuid', 'exists:financial_categories,uuid'],
+            'parent_uuid' => ['nullable', 'uuid', 'exists:fin_categories,uuid'],
             'name' => ['required', 'string', 'max:255'],
             'type' => ['required', new Enum(CategoryType::class)],
             'description' => ['nullable', 'string'],

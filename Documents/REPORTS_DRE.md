@@ -99,7 +99,7 @@ $transactionsTable = config('financial.table_prefix', 'fin_') . 'transactions';
 
 $results = DB::table("{$entriesTable} as e")
     ->join("{$transactionsTable} as t", 'e.transaction_id', '=', 't.uuid')
-    ->join('financial_categories as c', 'e.category_uuid', '=', 'c.uuid')
+    ->join('fin_categories as c', 'e.category_uuid', '=', 'c.uuid')
     ->select([
         'c.uuid as category_uuid',
         'c.name as category_name',

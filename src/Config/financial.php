@@ -20,4 +20,17 @@ return [
     |
     */
     'default_currency' => 'BRL',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Configurações Web
+    |--------------------------------------------------------------------------
+    |
+    | Define as configurações para as rotas web do pacote.
+    |
+    */
+    'web' => [
+        'prefix' => 'financial',
+        'middleware' => ['web', 'auth'],
+    ],
 ];

@@ -1,22 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Am2tec\Financial\Domain\Entities;
 
 use Am2tec\Financial\Domain\Enums\CategoryType;
-use Spatie\LaravelData\Data;
 
-class Category extends Data
+class Category
 {
     public function __construct(
-        public string $uuid,
-        public ?string $parent_uuid,
-        public string $name,
-        public string $slug,
-        public CategoryType $type,
-        public bool $is_system_category,
-        public ?string $description,
-        public mixed $created_at,
-        public mixed $updated_at,
+        public readonly ?string $uuid,
+        public readonly string $name,
+        public readonly string $slug,
+        public readonly CategoryType $type,
+        public readonly ?string $description,
+        public readonly ?string $parent_uuid = null
     ) {
     }
 }

@@ -2,10 +2,9 @@
 
 namespace Am2tec\Financial\Domain\Contracts;
 
-use Am2tec\Financial\Domain\Entities\RecurringSchedule;
+use Illuminate\Database\Eloquent\Collection;
 
 interface RecurringScheduleRepositoryInterface
 {
-    public function save(RecurringSchedule $schedule): RecurringSchedule;
-    public function findDue(): array;
+    public function findDue(): Collection;
 }

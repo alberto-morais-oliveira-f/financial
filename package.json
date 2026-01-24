@@ -1,13 +1,58 @@
 {
-    "private": true,
+    "name": "am2tec/financial",
+    "description": "Módulo Financeiro Genérico (General Ledger) para Laravel",
+    "type": "module",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Alberto",
+            "email": "albertomorais80@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "illuminate/support": "^9.0|^10.0|^11.0|^12.0",
+        "spatie/laravel-data": "^3.0|^4.0",
+        "illuminate/database": "^10.0|^11.0|^12.0",
+        "dragonmantank/cron-expression": "^3.3"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^8.0|^9.0",
+        "phpunit/phpunit": "^10.0",
+        "mockery/mockery": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Am2tec\\Financial\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Am2tec\\Financial\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Am2tec\\Financial\\Infrastructure\\Providers\\FinancialServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "scripts": {
         "dev": "vite",
         "build": "vite build"
     },
     "devDependencies": {
         "axios": "^1.1.2",
-        "laravel-vite-plugin": "^0.7.2",
-        "vite": "^4.0.0",
+        "laravel-vite-plugin": "^1.0.0",
+        "laravel-datatables-vite": "^0.5.0",
+        "@vitejs/plugin-vue": "^5.0.0",
+        "vite": "^5.0.0",
         "sass": "^1.56.1",
         "bootstrap": "^5.2.3",
         "@popperjs/core": "^2.11.6",

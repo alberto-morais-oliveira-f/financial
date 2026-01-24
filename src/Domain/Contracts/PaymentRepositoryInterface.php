@@ -2,11 +2,9 @@
 
 namespace Am2tec\Financial\Domain\Contracts;
 
-use Am2tec\Financial\Domain\Entities\Payment;
+use Am2tec\Financial\Infrastructure\Persistence\Models\PaymentModel;
 
 interface PaymentRepositoryInterface
 {
-    public function save(Payment $payment): Payment;
-    public function findById(string $uuid): ?Payment;
-    public function findByGatewayId(string $gateway, string $gatewayTransactionId): ?Payment;
+    public function findByGatewayId(string $gateway, string $gatewayTransactionId): ?PaymentModel;
 }

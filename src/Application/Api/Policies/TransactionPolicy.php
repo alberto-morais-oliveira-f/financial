@@ -16,7 +16,7 @@ class TransactionPolicy
 
     public function create(Authenticatable $user, string $fromWalletId): bool
     {
-        $wallet = $this->walletRepository->findById($fromWalletId);
+        $wallet = $this->walletRepository->get($fromWalletId);
 
         if (!$wallet) {
             return false;

@@ -3,58 +3,20 @@
 namespace Am2tec\Financial\Infrastructure\Persistence\Repositories;
 
 use Am2tec\Financial\Domain\Contracts\WalletRepositoryInterface;
-use Am2tec\Financial\Domain\Entities\Wallet;
-use Am2tec\Financial\Domain\Enums\WalletStatus;
-use Am2tec\Financial\Domain\ValueObjects\Currency;
-use Am2tec\Financial\Domain\ValueObjects\Money;
 use Am2tec\Financial\Domain\ValueObjects\Owner;
 use Am2tec\Financial\Infrastructure\Persistence\Models\WalletModel;
+use Illuminate\Database\Eloquent\Collection;
 
-class EloquentWalletRepository implements WalletRepositoryInterface
+class EloquentWalletRepository extends BaseRepository implements WalletRepositoryInterface
 {
-    public function findById(string $uuid): ?Wallet
+    public function __construct(WalletModel $model)
     {
-        $model = WalletModel::find($uuid);
-        return $model ? $this->toEntity($model) : null;
+        parent::__construct($model);
     }
 
-    public function save(Wallet $wallet): Wallet
+    public function findByOwner(Owner $owner): Collection
     {
-        $model = WalletModel::updateOrCreate(
-            ['id' => $wallet->uuid],
-            [
-                'owner_type' => $wallet->owner->getOwnerType(),
-                'owner_id' => $wallet->owner->getOwnerId(),
-                'name' => $wallet->name,
-                'balance' => $wallet->balance->amount,
-                'currency' => $wallet->balance->currency->code,
-                'status' => $wallet->status->value, // CORREÇÃO: Adicionado
-            ]
-        );
-
-        return $this->toEntity($model->fresh());
-    }
-
-    public function findByOwner(Owner $owner): array
-    {
-        $models = WalletModel::where('owner_type', $owner->getOwnerType())
-            ->where('owner_id', $owner->getOwnerId())
-            ->get();
-
-        return $models->map(fn($model) => $this->toEntity($model))->all();
-    }
-
-    private function toEntity(WalletModel $model): Wallet
-    {
-        $owner = new Owner($model->owner_id, $model->owner_type);
-        $balance = new Money($model->balance, new Currency($model->currency));
-
-        return new Wallet(
-            uuid: $model->id,
-            name: $model->name,
-            balance: $balance,
-            owner: $owner,
-            status: WalletStatus::from($model->status) // CORREÇÃO: Adicionado
-        );
+        return $this->model->where('owner_id', $owner->getOwnerId())
+            ->where('owner_type', $owner->getOwnerType())->get();
     }
 }

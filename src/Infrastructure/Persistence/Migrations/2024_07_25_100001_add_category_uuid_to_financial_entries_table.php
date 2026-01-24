@@ -11,18 +11,29 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $entriesTable = config('financial.table_prefix', 'fin_') . 'entries';
-        // CORREÇÃO: Usar o prefixo para a tabela de categorias
-        $categoriesTable = config('financial.table_prefix', 'fin_') . 'categories';
+        // Usar o prefixo configurável para manter consistência com as tabelas existentes
+        $prefix = config('financial.table_prefix', 'fin_');
+        $entriesTable = $prefix . 'entries';
+        
+        // A tabela de categorias foi fixada como 'financial_categories' na migração anterior
+        $categoriesTable = 'fin_categories';
 
-        Schema::table($entriesTable, function (Blueprint $table) use ($categoriesTable) {
-            $table->foreignUuid('category_uuid')->nullable()->after('wallet_id');
+        if (Schema::hasTable($entriesTable)) {
+            Schema::table($entriesTable, function (Blueprint $table) use ($categoriesTable) {
+                // Adiciona a coluna apenas se ela não existir
+                if (!Schema::hasColumn($table->getTable(), 'category_uuid')) {
+                    // Usa 'wallet_id' como referência de posição, pois é o nome da coluna na migração original
+                    $table->uuid('category_uuid')->nullable()->after('wallet_id');
+                }
+            });
 
-            $table->foreign('category_uuid')
-                  ->references('uuid')
-                  ->on($categoriesTable)
-                  ->nullOnDelete();
-        });
+            Schema::table($entriesTable, function (Blueprint $table) use ($categoriesTable) {
+                 $table->foreign('category_uuid')
+                      ->references('uuid')
+                      ->on($categoriesTable)
+                      ->nullOnDelete();
+            });
+        }
     }
 
     /**
@@ -30,11 +41,16 @@ return new class extends Migration
      */
     public function down(): void
     {
-        $entriesTable = config('financial.table_prefix', 'fin_') . 'entries';
+        $prefix = config('financial.table_prefix', 'fin_');
+        $entriesTable = $prefix . 'entries';
 
-        Schema::table($entriesTable, function (Blueprint $table) {
-            $table->dropForeign(['category_uuid']);
-            $table->dropColumn('category_uuid');
-        });
+        if (Schema::hasTable($entriesTable)) {
+            Schema::table($entriesTable, function (Blueprint $table) {
+                if (Schema::hasColumn($table->getTable(), 'category_uuid')) {
+                    $table->dropForeign(['category_uuid']);
+                    $table->dropColumn('category_uuid');
+                }
+            });
+        }
     }
 };

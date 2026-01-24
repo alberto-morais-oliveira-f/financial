@@ -1,43 +1,154 @@
 import { defineConfig } from 'vite';
-import laravel from 'laravel-vite-plugin';
+import vue from '@vitejs/plugin-vue';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export default defineConfig({
-    plugins: [
-        laravel({
-            input: {
-                // Light Theme
-                'light-main': 'resources/scss/light/assets/main.scss',
-                'light-structure': 'resources/scss/layouts/modern-light-menu/light/structure.scss',
-                'light-font-icons': 'resources/scss/light/assets/components/font-icons.scss',
-                'light-loader': 'resources/scss/layouts/modern-light-menu/light/loader.scss',
-                
-                // Dark Theme
-                'dark-main': 'resources/scss/dark/assets/main.scss',
-                'dark-structure': 'resources/scss/layouts/modern-light-menu/dark/structure.scss',
-                'dark-font-icons': 'resources/scss/dark/assets/components/font-icons.scss',
-                'dark-loader': 'resources/scss/layouts/modern-light-menu/dark/loader.scss',
-
-                // JS
-                // 'app': 'resources/layouts/vertical-light-menu/app.js',
-            },
-            refresh: true,
-        }),
-    ],
-    build: {
-        outDir: 'resources/assets',
-        emptyOutDir: false,
-        rollupOptions: {
-            output: {
-                entryFileNames: 'js/[name].js',
-                chunkFileNames: 'js/[name].js',
-                assetFileNames: (assetInfo) => {
-                    if (assetInfo.name.endsWith('.css')) {
-                        return 'css/[name][extname]';
-                    }
-                    return 'images/[name][extname]';
-                },
-            },
+    resolve: {
+        alias: {
+            vue: 'vue/dist/vue.esm-bundler.js',
+            '@images': path.resolve(__dirname, 'resources/images'),
         },
     },
+    plugins: [
+        {
+            name: 'laravel-vite-plugin',
+            config: async () => {
+                const laravel = await import('laravel-vite-plugin');
+                return laravel.default({
+                    input: [
+                        'resources/js/laravel-app.js',
+                        'resources/layouts/vertical-light-menu/loader.js',
+                        'resources/layouts/modern-light-menu/loader.js',
+                        'resources/scss/layouts/vertical-light-menu/light/structure.scss',
+                        'resources/scss/layouts/vertical-light-menu/dark/structure.scss',
+                        'resources/scss/layouts/vertical-light-menu/light/loader.scss',
+                        'resources/scss/layouts/vertical-light-menu/dark/loader.scss',
+
+                        'resources/scss/layouts/modern-light-menu/light/structure.scss',
+                        'resources/scss/layouts/modern-light-menu/dark/structure.scss',
+                        'resources/scss/layouts/modern-light-menu/light/loader.scss',
+                        'resources/scss/layouts/modern-light-menu/dark/loader.scss',
+
+                        'resources/scss/light/assets/main.scss',
+                        'resources/scss/dark/assets/main.scss',
+                        'resources/scss/calendar.scss',
+                        'resources/scss/my.scss',
+                        'resources/scss/light/assets/scrollspyNav.scss',
+                        'resources/scss/light/assets/custom.scss',
+                        'resources/scss/dark/assets/scrollspyNav.scss',
+                        'resources/scss/dark/assets/custom.scss',
+                        'resources/scss/light/assets/apps/blog-create.scss',
+                        'resources/scss/light/assets/apps/blog-post.scss',
+                        'resources/scss/light/assets/apps/chat.scss',
+                        'resources/scss/light/assets/apps/contacts.scss',
+                        'resources/scss/light/assets/apps/ecommerce-create.scss',
+                        'resources/scss/light/assets/apps/ecommerce-details.scss',
+                        'resources/scss/light/assets/apps/invoice-add.scss',
+                        'resources/scss/light/assets/apps/invoice-edit.scss',
+                        'resources/scss/light/assets/apps/invoice-list.scss',
+                        'resources/scss/light/assets/apps/invoice-preview.scss',
+                        'resources/scss/light/assets/apps/mailbox.scss',
+                        'resources/scss/light/assets/apps/notes.scss',
+                        'resources/scss/light/assets/apps/scrumboard.scss',
+                        'resources/scss/light/assets/apps/todolist.scss',
+                        'resources/scss/light/assets/authentication/auth-boxed.scss',
+                        'resources/scss/light/assets/authentication/auth-cover.scss',
+                        'resources/scss/light/assets/components/accordions.scss',
+                        'resources/scss/light/assets/components/carousel.scss',
+                        'resources/scss/light/assets/components/flags.scss',
+                        'resources/scss/light/assets/components/font-icons.scss',
+                        'resources/scss/light/assets/components/list-group.scss',
+                        'resources/scss/light/assets/components/media_object.scss',
+                        'resources/scss/light/assets/components/modal.scss',
+                        'resources/scss/light/assets/components/tabs.scss',
+                        'resources/scss/light/assets/components/timeline.scss',
+                        'resources/scss/light/assets/dashboard/dash_1.scss',
+                        'resources/scss/light/assets/dashboard/dash_2.scss',
+                        'resources/scss/light/assets/elements/alert.scss',
+                        'resources/scss/light/assets/elements/color_library.scss',
+                        'resources/scss/light/assets/elements/custom-pagination.scss',
+                        'resources/scss/light/assets/elements/custom-tree_view.scss',
+                        'resources/scss/light/assets/elements/custom-typography.scss',
+                        'resources/scss/light/assets/elements/infobox.scss',
+                        'resources/scss/light/assets/elements/popover.scss',
+                        'resources/scss/light/assets/elements/search.scss',
+                        'resources/scss/light/assets/elements/tooltip.scss',
+                        'resources/scss/light/assets/forms/switches.scss',
+                        'resources/scss/light/assets/pages/contact_us.scss',
+                        'resources/scss/light/assets/pages/faq.scss',
+                        'resources/scss/light/assets/pages/knowledge_base.scss',
+                        'resources/scss/light/assets/pages/error/error.scss',
+                        'resources/scss/light/assets/pages/error/style-maintanence.scss',
+                        'resources/scss/light/assets/users/account-setting.scss',
+                        'resources/scss/light/assets/users/user-profile.scss',
+                        'resources/scss/light/assets/widgets/modules-widgets.scss',
+                        'resources/scss/dark/assets/apps/blog-create.scss',
+                        'resources/scss/dark/assets/apps/blog-post.scss',
+                        'resources/scss/dark/assets/apps/chat.scss',
+                        'resources/scss/dark/assets/apps/contacts.scss',
+                        'resources/scss/dark/assets/apps/ecommerce-create.scss',
+                        'resources/scss/dark/assets/apps/ecommerce-details.scss',
+                        'resources/scss/dark/assets/apps/invoice-add.scss',
+                        'resources/scss/dark/assets/apps/invoice-edit.scss',
+                        'resources/scss/dark/assets/apps/invoice-list.scss',
+                        'resources/scss/dark/assets/apps/invoice-preview.scss',
+                        'resources/scss/dark/assets/apps/mailbox.scss',
+                        'resources/scss/dark/assets/apps/notes.scss',
+                        'resources/scss/dark/assets/apps/scrumboard.scss',
+                        'resources/scss/dark/assets/apps/todolist.scss',
+                        'resources/scss/dark/assets/authentication/auth-boxed.scss',
+                        'resources/scss/dark/assets/authentication/auth-cover.scss',
+                        'resources/scss/dark/assets/components/accordions.scss',
+                        'resources/scss/dark/assets/components/carousel.scss',
+                        'resources/scss/dark/assets/components/flags.scss',
+                        'resources/scss/dark/assets/components/font-icons.scss',
+                        'resources/scss/dark/assets/components/list-group.scss',
+                        'resources/scss/dark/assets/components/media_object.scss',
+                        'resources/scss/dark/assets/components/modal.scss',
+                        'resources/scss/dark/assets/components/tabs.scss',
+                        'resources/scss/dark/assets/components/timeline.scss',
+                        'resources/scss/dark/assets/dashboard/dash_1.scss',
+                        'resources/scss/dark/assets/dashboard/dash_2.scss',
+                        'resources/scss/dark/assets/elements/alert.scss',
+                        'resources/scss/dark/assets/elements/color_library.scss',
+                        'resources/scss/dark/assets/elements/custom-pagination.scss',
+                        'resources/scss/dark/assets/elements/custom-tree_view.scss',
+                        'resources/scss/dark/assets/elements/custom-typography.scss',
+                        'resources/scss/dark/assets/elements/infobox.scss',
+                        'resources/scss/dark/assets/elements/popover.scss',
+                        'resources/scss/dark/assets/elements/search.scss',
+                        'resources/scss/dark/assets/elements/tooltip.scss',
+                        'resources/scss/dark/assets/forms/switches.scss',
+                        'resources/scss/dark/assets/pages/contact_us.scss',
+                        'resources/scss/dark/assets/pages/faq.scss',
+                        'resources/scss/dark/assets/pages/knowledge_base.scss',
+                        'resources/scss/dark/assets/pages/error/error.scss',
+                        'resources/scss/dark/assets/pages/error/style-maintanence.scss',
+                        'resources/scss/dark/assets/users/account-setting.scss',
+                        'resources/scss/dark/assets/users/user-profile.scss',
+                        'resources/scss/dark/assets/widgets/modules-widgets.scss',
+                        'resources/js/custom.js',
+                        'resources/js/scrollspyNav.js',
+                        'resources/layouts/vertical-light-menu/app.js',
+                        'resources/js/libs/jquery.maskMoney.js',
+                        'resources/js/libs/select2.min.js',
+                        'resources/js/common.js'
+                    ],
+                    refresh: true,
+                })
+            },
+        },
+        vue({
+            template: {
+                transformAssetUrls: {
+                    base: null,
+                    includeAbsolute: false,
+                },
+            },
+        }),
+    ],
 });
