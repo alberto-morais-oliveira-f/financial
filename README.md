@@ -31,14 +31,28 @@ composer require am2tec/financial
     php artisan vendor:publish --provider="Am2tec\Financial\Infrastructure\Providers\FinancialServiceProvider" --tag="financial-migrations"
     ```
 
-2.  **Executar as Migrations**:
+2.  **Publicar Assets do Frontend**:
+    Este comando irá publicar os arquivos de assets (CSS, JS, imagens) necessários para o funcionamento das interfaces do pacote.
+
+    ```bash
+    php artisan vendor:publish --provider="Am2tec\Financial\Infrastructure\Providers\FinancialServiceProvider" --tag="financial-assets"
+    ```
+
+3.  **Publicar Views (Opcional)**:
+    Caso deseje customizar as views do pacote, você pode publicá-las para `resources/views/vendor/financial`.
+
+    ```bash
+    php artisan vendor:publish --provider="Am2tec\Financial\Infrastructure\Providers\FinancialServiceProvider" --tag="financial-views"
+    ```
+
+4.  **Executar as Migrations**:
     Execute as migrations para criar todas as tabelas necessárias, incluindo carteiras, transações e as novas tabelas de categorias.
 
     ```bash
     php artisan migrate
     ```
 
-3.  **(Opcional) Popular Categorias Padrão**:
+5.  **(Opcional) Popular Categorias Padrão**:
     Para começar rapidamente, você pode popular o banco de dados com um conjunto de categorias financeiras padrão (Receitas, Despesas, Custos, etc.).
 
     ```bash
@@ -47,7 +61,35 @@ composer require am2tec/financial
 
 ---
 
-## 3. Conceitos Principais
+## 3. Frontend e Assets
+
+O pacote inclui uma interface administrativa construída com Bootstrap e Vite. Para garantir que os estilos e scripts sejam carregados corretamente na sua aplicação Laravel, siga os passos abaixo:
+
+### a. Configuração do Vite
+
+Se você estiver usando Vite na sua aplicação principal, certifique-se de que os assets do pacote publicados em `public/vendor/financial` sejam acessíveis. O pacote já fornece os arquivos compilados, então você geralmente não precisa recompilá-los, apenas referenciá-los nas suas views se estiver estendendo os layouts.
+
+No entanto, as views do pacote já vêm configuradas para carregar os assets corretos.
+
+### b. Dependências de Frontend
+
+O pacote utiliza as seguintes bibliotecas (já incluídas nos assets compilados ou referenciadas via CDN/Vendor):
+- Bootstrap 5
+- jQuery
+- DataTables (com integração BS5)
+- Feather Icons
+- Perfect Scrollbar
+
+Se você precisar recompilar os assets do pacote (para desenvolvimento do próprio pacote), instale as dependências:
+
+```bash
+npm install
+npm run build
+```
+
+---
+
+## 4. Conceitos Principais
 
 - **Wallet**: A carteira virtual de uma entidade. É o contêiner do saldo.
 - **Transaction**: Representa uma movimentação financeira (ex: uma transferência). É composta por `Entries`.
@@ -60,7 +102,7 @@ composer require am2tec/financial
 
 ---
 
-## 4. Guia de Uso
+## 5. Guia de Uso
 
 ### a. Implementando o `AccountOwner`
 
@@ -338,7 +380,7 @@ try {
 
 ---
 
-## 5. API REST
+## 6. API REST
 
 O pacote expõe alguns endpoints de API. Eles são protegidos por Policies, então o usuário precisa estar autenticado.
 

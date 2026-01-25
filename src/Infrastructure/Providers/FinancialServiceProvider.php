@@ -34,6 +34,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Str;
 
 class FinancialServiceProvider extends ServiceProvider
 {
@@ -101,7 +102,19 @@ class FinancialServiceProvider extends ServiceProvider
     protected function registerFactories(): void
     {
         Factory::guessFactoryNamesUsing(function (string $modelName) {
-            return 'Am2tec\\Financial\\Infrastructure\\Persistence\\Factories\\' . class_basename($modelName) . 'Factory';
+            // Primeiro, verifica se o model pertence a este pacote.
+            if (Str::startsWith($modelName, 'Am2tec\\Financial\\')) {
+                return 'Am2tec\\Financial\\Infrastructure\\Persistence\\Factories\\' . class_basename($modelName) . 'Factory';
+            }
+
+            // Caso contrário, recria a lógica padrão do Laravel para os models da aplicação.
+            $appNamespace = $this->app->getNamespace();
+
+            $modelNameWithoutNamespace = Str::startsWith($modelName, $appNamespace . 'Models\\')
+                ? Str::after($modelName, $appNamespace . 'Models\\')
+                : Str::after($modelName, $appNamespace);
+
+            return 'Database\\Factories\\' . $modelNameWithoutNamespace . 'Factory';
         });
     }
 
@@ -110,19 +123,6 @@ class FinancialServiceProvider extends ServiceProvider
         Route::group($this->routeConfiguration(), function () {
             $this->loadRoutesFrom(__DIR__ . '/../../Application/Api/routes.php');
         });
-
-        // As rotas web agora são carregadas dentro do grupo configurável,
-        // mas o arquivo de rotas em si não deve redefinir o grupo se já estiver encapsulado.
-        // No entanto, o padrão atual do arquivo routes-web.php é definir seu próprio grupo.
-        // Vamos manter a chamada simples aqui e deixar a configuração controlar o grupo no arquivo ou aqui.
-        // A melhor prática em pacotes é definir o grupo aqui no Provider.
-        
-        // Vamos carregar as rotas web usando a configuração definida.
-        // O arquivo routes-web.php atualmente define um grupo Route::group(...).
-        // Isso pode causar aninhamento duplo se definirmos um grupo aqui também.
-        // O ideal é que o arquivo de rotas contenha apenas as rotas, e o Provider defina o grupo.
-        // Mas como não alteramos o routes-web.php para remover o grupo, vamos apenas carregar o arquivo.
-        // O arquivo routes-web.php JÁ USA config('financial.web.prefix') e config('financial.web.middleware').
         
         $this->loadRoutesFrom(__DIR__ . '/../../Application/Http/routes-web.php');
     }

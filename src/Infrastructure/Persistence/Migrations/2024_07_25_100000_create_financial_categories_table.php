@@ -10,7 +10,7 @@ return new class extends Migration
     {
         $prefix = config('financial.table_prefix', 'fin_');
 
-        $tableName = $prefix . '_categories';
+        $tableName = $prefix . 'categories';
 
         if (!Schema::hasTable($tableName)) {
             Schema::create($tableName, function (Blueprint $table) {
