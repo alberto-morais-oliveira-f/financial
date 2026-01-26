@@ -38,12 +38,13 @@ class CategoryDataTable extends DataTable
     public function html(): HtmlBuilder
     {
         return $this->builder()
+            ->setTableId('categories-table')
             ->languageInfo('Exibindo _PAGE_ página de _PAGES_')
             ->languageSearch('<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>')
             ->languageSearchPlaceholder('Procurar...')
             ->languageLengthMenu('_MENU_ Por Página')
             ->addTableClass('table table-striped table-hover')
-            ->setTableId('categories-table')
+            ->setTableId('students-table')
             ->columns($this->getColumns())
             ->minifiedAjax()
             ->orderBy(1)

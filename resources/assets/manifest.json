@@ -1,0 +1,42 @@
+{
+  "resources/scss/dark/assets/components/font-icons.scss": {
+    "file": "css/font-icons2.css",
+    "isEntry": true,
+    "src": "resources/scss/dark/assets/components/font-icons.scss"
+  },
+  "resources/scss/dark/assets/main.scss": {
+    "file": "css/main2.css",
+    "isEntry": true,
+    "src": "resources/scss/dark/assets/main.scss"
+  },
+  "resources/scss/layouts/modern-light-menu/dark/loader.scss": {
+    "file": "css/loader2.css",
+    "isEntry": true,
+    "src": "resources/scss/layouts/modern-light-menu/dark/loader.scss"
+  },
+  "resources/scss/layouts/modern-light-menu/dark/structure.scss": {
+    "file": "css/structure2.css",
+    "isEntry": true,
+    "src": "resources/scss/layouts/modern-light-menu/dark/structure.scss"
+  },
+  "resources/scss/layouts/modern-light-menu/light/loader.scss": {
+    "file": "css/loader.css",
+    "isEntry": true,
+    "src": "resources/scss/layouts/modern-light-menu/light/loader.scss"
+  },
+  "resources/scss/layouts/modern-light-menu/light/structure.scss": {
+    "file": "css/structure.css",
+    "isEntry": true,
+    "src": "resources/scss/layouts/modern-light-menu/light/structure.scss"
+  },
+  "resources/scss/light/assets/components/font-icons.scss": {
+    "file": "css/font-icons.css",
+    "isEntry": true,
+    "src": "resources/scss/light/assets/components/font-icons.scss"
+  },
+  "resources/scss/light/assets/main.scss": {
+    "file": "css/main.css",
+    "isEntry": true,
+    "src": "resources/scss/light/assets/main.scss"
+  }
+}
