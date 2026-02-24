@@ -1,5 +1,11 @@
 @extends('financial::layouts.master', ['title' => 'Transações'])
-
+@section('styles')
+    <link rel="stylesheet" href="{{ asset('plugins/src/table/datatable/datatables.css') }}">
+    @vite(['resources/scss/light/plugins/table/datatable/dt-global_style.scss'])
+    @vite(['resources/scss/light/plugins/table/datatable/custom_dt_custom.scss'])
+    @vite(['resources/scss/dark/plugins/table/datatable/dt-global_style.scss'])
+    @vite(['resources/scss/dark/plugins/table/datatable/custom_dt_custom.scss'])
+@endsection
 @section('btn_create')
     <a href="{{ route('financial.transactions.create') }}" class="btn btn-primary">Nova Transferência</a>
 @endsection

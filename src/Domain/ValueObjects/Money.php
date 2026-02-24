@@ -3,6 +3,7 @@
 namespace Am2tec\Financial\Domain\ValueObjects;
 
 use InvalidArgumentException;
+use NumberFormatter;
 
 class Money
 {
@@ -33,5 +34,11 @@ class Money
         if (! $this->currency->equals($other->currency)) {
             throw new InvalidArgumentException("Currencies must match: {$this->currency->code} vs {$other->currency->code}");
         }
+    }
+
+    public function format(): string
+    {
+        $formatter = new NumberFormatter('pt_BR', NumberFormatter::CURRENCY);
+        return $formatter->formatCurrency($this->amount / 100, $this->currency->code);
     }
 }

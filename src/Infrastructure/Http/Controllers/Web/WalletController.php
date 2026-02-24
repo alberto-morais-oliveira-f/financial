@@ -8,6 +8,7 @@ use Am2tec\Financial\Infrastructure\Http\Requests\StoreWalletRequest;
 use Am2tec\Financial\Infrastructure\Http\Requests\UpdateWalletRequest;
 use Am2tec\Financial\Infrastructure\Persistence\Models\WalletModel;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class WalletController extends Controller
 {
@@ -27,7 +28,14 @@ class WalletController extends Controller
 
     public function store(StoreWalletRequest $request)
     {
-        $this->repository->create($request->validated());
+        $data = $request->validated();
+        $user = Auth::user();
+        
+        $data['owner_id'] = $user->id;
+        $data['owner_type'] = get_class($user);
+        $data['currency'] = config('financial.default_currency', 'BRL');
+
+        $this->repository->create($data);
 
         return redirect()->route('financial.wallets.index')->with('success', 'Carteira criada com sucesso.');
     }

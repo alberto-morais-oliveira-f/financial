@@ -6,6 +6,8 @@ use Am2tec\Financial\Infrastructure\Http\Controllers\Web\TransactionController;
 use Am2tec\Financial\Infrastructure\Http\Controllers\Web\PaymentController;
 use Am2tec\Financial\Infrastructure\Http\Controllers\Web\CategoryController;
 use Am2tec\Financial\Infrastructure\Http\Controllers\Web\ReportController;
+use Am2tec\Financial\Infrastructure\Http\Controllers\Web\IncomeController;
+use Am2tec\Financial\Infrastructure\Http\Controllers\Web\ExpenseController;
 
 Route::group(['prefix' => config('financial.web.prefix', 'financial'), 'as' => 'financial.', 'middleware' => config('financial.web.middleware', ['web'])], function () {
     
@@ -26,6 +28,12 @@ Route::group(['prefix' => config('financial.web.prefix', 'financial'), 'as' => '
     Route::get('payments', [PaymentController::class, 'index'])->name('payments.index');
     Route::get('payments/{id}/refund', [PaymentController::class, 'refundForm'])->name('payments.refund');
     Route::post('payments/{id}/refund', [PaymentController::class, 'refund'])->name('payments.refund.store');
+
+    // Incomes
+    Route::get('incomes', [IncomeController::class, 'index'])->name('incomes.index');
+
+    // Expenses
+    Route::get('expenses', [ExpenseController::class, 'index'])->name('expenses.index');
 
     // Categories
     Route::resource('categories', CategoryController::class);

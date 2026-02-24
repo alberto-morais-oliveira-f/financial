@@ -1,4 +1,4 @@
-@extends('layouts.master', ['title' => 'Categorias'])
+@extends('financial::layouts.master', ['title' => 'Receitas'])
 @section('styles')
     <link rel="stylesheet" href="{{ asset('plugins/src/table/datatable/datatables.css') }}">
     @vite(['resources/scss/light/plugins/table/datatable/dt-global_style.scss'])
@@ -6,22 +6,16 @@
     @vite(['resources/scss/dark/plugins/table/datatable/dt-global_style.scss'])
     @vite(['resources/scss/dark/plugins/table/datatable/custom_dt_custom.scss'])
 @endsection
-@section('btn_create')
-    <a href="{{ route('financial.categories.create') }}" class="btn btn-success btn-sm float-end">
-        Nova Categoria
-    </a>
-@endsection
-
 @section('content')
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-body datatables-table">
-                    {{ $dataTable->table() }}
-                </div>
+<div class="row">
+    <div class="col-xl-12 col-lg-12 col-sm-12 layout-spacing">
+        <div class="widget-content widget-content-area br-6">
+            <div class="table-responsive">
+                {{ $dataTable->table() }}
             </div>
         </div>
     </div>
+</div>
 @endsection
 
 @section('scripts')

@@ -2,7 +2,7 @@
 
 namespace Am2tec\Financial\Infrastructure\DataTables;
 
-use Am2tec\Financial\Infrastructure\Persistence\Models\WalletModel;
+use Am2tec\Financial\Infrastructure\Persistence\Models\PaymentModel;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
@@ -10,20 +10,27 @@ use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\Services\DataTable;
 
-class WalletDataTable extends DataTable
+class PaymentDataTable extends DataTable
 {
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->addColumn('action', function (WalletModel $wallet) {
-                return view('financial::wallets.datatables.actions', ['model' => $wallet]);
+            ->addColumn('action', function (PaymentModel $payment) {
+                return view('financial::payments.datatables.actions', ['model' => $payment]);
             })
-            ->editColumn('balance', fn(WalletModel $wallet) => $wallet->balance->format())
-            ->editColumn('type', fn(WalletModel $wallet) => $wallet->type->getLabel())
-            ->setRowId('id');
+            ->editColumn('amount', function (PaymentModel $payment) {
+                return 'R$ ' . number_format($payment->amount / 100, 2, ',', '.');
+            })
+            ->editColumn('status', function (PaymentModel $payment) {
+                return $payment->status->value;
+            })
+            ->editColumn('created_at', function (PaymentModel $payment) {
+                return $payment->created_at->format('d/m/Y H:i:s');
+            })
+            ->setRowId('uuid');
     }
 
-    public function query(WalletModel $model): QueryBuilder
+    public function query(PaymentModel $model): QueryBuilder
     {
         return $model->newQuery();
     }
@@ -31,7 +38,7 @@ class WalletDataTable extends DataTable
     public function html(): HtmlBuilder
     {
         return $this->builder()
-            ->setTableId('wallets-table')
+            ->setTableId('payments-table')
             ->dom(
                 "<'dt--top-section'<'row'<'col-12 col-sm-6 d-flex justify-content-sm-start justify-content-center'l>" .
                 "<'col-12 col-sm-6 d-flex justify-content-sm-end justify-content-center mt-sm-0 mt-3'f>>>" .
@@ -77,10 +84,11 @@ class WalletDataTable extends DataTable
     protected function getColumns(): array
     {
         return [
-            Column::make('id'),
-            Column::make('name')->title('Nome'),
-            Column::make('balance')->title('Saldo'),
-            Column::make('type')->title('Tipo'),
+            Column::make('uuid')->title('ID')->visible(false),
+            Column::make('gateway')->title('Gateway'),
+            Column::make('amount')->title('Valor'),
+            Column::make('status')->title('Status'),
+            Column::make('created_at')->title('Data'),
             Column::computed('action')
                 ->title('Ações')
                 ->exportable(false)
@@ -92,6 +100,6 @@ class WalletDataTable extends DataTable
 
     protected function filename(): string
     {
-        return 'Wallets_' . date('YmdHis');
+        return 'Payments_' . date('YmdHis');
     }
 }

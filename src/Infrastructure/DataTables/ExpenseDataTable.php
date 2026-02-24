@@ -2,7 +2,7 @@
 
 namespace Am2tec\Financial\Infrastructure\DataTables;
 
-use Am2tec\Financial\Infrastructure\Persistence\Models\WalletModel;
+use Am2tec\Financial\Infrastructure\Persistence\Models\EntryModel;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
@@ -10,28 +10,40 @@ use Yajra\DataTables\Html\Button;
 use Yajra\DataTables\Html\Column;
 use Yajra\DataTables\Services\DataTable;
 
-class WalletDataTable extends DataTable
+class ExpenseDataTable extends DataTable
 {
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->addColumn('action', function (WalletModel $wallet) {
-                return view('financial::wallets.datatables.actions', ['model' => $wallet]);
+            ->addColumn('action', function (EntryModel $entry) {
+                return view('financial::expenses.datatables.actions', ['model' => $entry]);
             })
-            ->editColumn('balance', fn(WalletModel $wallet) => $wallet->balance->format())
-            ->editColumn('type', fn(WalletModel $wallet) => $wallet->type->getLabel())
-            ->setRowId('id');
+            ->editColumn('amount', function (EntryModel $entry) {
+                return 'R$ ' . number_format($entry->amount / 100, 2, ',', '.');
+            })
+            ->addColumn('category_name', function (EntryModel $entry) {
+                return $entry->category?->name ?? '-';
+            })
+            ->addColumn('wallet_name', function (EntryModel $entry) {
+                return $entry->wallet?->name ?? '-';
+            })
+            ->editColumn('created_at', function (EntryModel $entry) {
+                return $entry->created_at->format('d/m/Y H:i:s');
+            })
+            ->setRowId('uuid');
     }
 
-    public function query(WalletModel $model): QueryBuilder
+    public function query(EntryModel $model): QueryBuilder
     {
-        return $model->newQuery();
+        return $model->newQuery()
+            ->with(['category', 'wallet'])
+            ->where($model->getTable() . '.type', 'DEBIT');
     }
 
     public function html(): HtmlBuilder
     {
         return $this->builder()
-            ->setTableId('wallets-table')
+            ->setTableId('expenses-table')
             ->dom(
                 "<'dt--top-section'<'row'<'col-12 col-sm-6 d-flex justify-content-sm-start justify-content-center'l>" .
                 "<'col-12 col-sm-6 d-flex justify-content-sm-end justify-content-center mt-sm-0 mt-3'f>>>" .
@@ -77,10 +89,12 @@ class WalletDataTable extends DataTable
     protected function getColumns(): array
     {
         return [
-            Column::make('id'),
-            Column::make('name')->title('Nome'),
-            Column::make('balance')->title('Saldo'),
-            Column::make('type')->title('Tipo'),
+            Column::make('uuid')->title('ID')->visible(false),
+            Column::make('description')->title('Descrição'),
+            Column::make('amount')->title('Valor'),
+            Column::make('category_name')->title('Categoria')->name('category.name'),
+            Column::make('wallet_name')->title('Carteira')->name('wallet.name'),
+            Column::make('created_at')->title('Data'),
             Column::computed('action')
                 ->title('Ações')
                 ->exportable(false)
@@ -92,6 +106,6 @@ class WalletDataTable extends DataTable
 
     protected function filename(): string
     {
-        return 'Wallets_' . date('YmdHis');
+        return 'Expenses_' . date('YmdHis');
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Am2tec\Financial\Infrastructure\Persistence\Factories;
 
+use Am2tec\Financial\Domain\Enums\WalletType;
 use Am2tec\Financial\Infrastructure\Persistence\Models\WalletModel;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -18,6 +19,7 @@ class WalletModelFactory extends Factory
             'balance' => $this->faker->numberBetween(0, 1000000),
             'status' => 'active',
             'name' => $this->faker->company . ' Wallet',
+            'type' => WalletType::BANK_ACCOUNT->value,
         ];
     }
 }
