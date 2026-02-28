@@ -1,6 +1,16 @@
-<a href="{{ route('financial.categories.edit', $model->id) }}" class="btn btn-primary btn-sm">Editar</a>
-<form action="{{ route('financial.categories.destroy', $model->id) }}" method="POST" style="display: inline-block;">
-    @csrf
-    @method('DELETE')
-    <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
-</form>
+<div class="action-btns">
+    <a href="{{ route('financial.categories.edit', $model->uuid) }}" class="action-btn btn-edit bs-tooltip me-2"
+       data-toggle="tooltip" data-placement="top" title="Editar">
+        <i data-feather="edit-2" class="p-1 br-8 mb-1"></i>
+    </a>
+    <a href="javascript:void(0);" 
+       onclick="if(confirm('Tem certeza que deseja excluir esta categoria?')) { this.nextElementSibling.submit(); }" 
+       class="action-btn btn-delete bs-tooltip"
+       data-toggle="tooltip" data-placement="top" title="Excluir">
+        <i data-feather="trash-2" class="p-1 br-8 mb-1"></i>
+    </a>
+    <form action="{{ route('financial.categories.destroy', $model->uuid) }}" method="POST" style="display: none;">
+        @csrf
+        @method('DELETE')
+    </form>
+</div>

@@ -9,7 +9,7 @@
 @endsection
 
 @section('btn_create')
-    <a href="{{ route('master.student.create') }}" class="btn btn-success float-end ml-1 mb-3">
+    <a href="{{ route('financial.suppliers.create') }}" class="btn btn-success float-end ml-1 mb-3">
         Novo Fornecedor
     </a>
 @endsection
