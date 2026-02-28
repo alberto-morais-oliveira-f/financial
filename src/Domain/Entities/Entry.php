@@ -10,6 +10,8 @@ class Entry
     public function __construct(
         public readonly ?string $uuid,
         public readonly string $walletId,
+        public readonly ?string $categoryUuid,
+        public readonly ?string $supplierUuid,
         public readonly EntryType $type,
         public readonly Money $amount,
         public readonly ?Money $beforeBalance = null,

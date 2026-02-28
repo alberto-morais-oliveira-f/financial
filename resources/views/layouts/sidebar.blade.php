@@ -8,25 +8,25 @@
         <span>FINANCEIRO</span>
     </div>
 </li>
-@if(!__isMaster())
-    <li class="menu {{ Request::routeIs('payment') ? 'active' : '' }}">
-        <a href="{{route("payment")}}" aria-expanded="{{ Request::routeIs('payment') ? 'true' : 'false' }}"
-           class="dropdown-toggle">
-            <div class="">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                     stroke-linejoin="round" class="feather feather-credit-card">
-                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-                    <line x1="1" y1="10" x2="23" y2="10"></line>
-                </svg>
-                <span>Pagamento</span>
-            </div>
-        </a>
-    </li>
-@endif
-<li class="menu {{ Request::routeIs("{$prefix}.payment.plans", 'master.monthly_payment', 'master.payment.subscription*', 'financial.payments.index', 'financial.incomes.index', 'financial.expenses.index') ? 'active' : '' }}">
+<li class="menu {{ Request::routeIs(
+        'master.monthly_payment',
+        'financial.payments.index',
+        'financial.incomes.index',
+        'financial.expenses.index',
+        'financial.wallets.index',
+        'financial.categories.index',
+        'financial.transactions.index'
+        ) ? 'active' : '' }}">
     <a href="#recebimentos" data-bs-toggle="collapse"
-       role="button" aria-expanded="{{ Request::routeIs("{$prefix}.payment.plans", 'master.monthly_payment', 'master.payment.subscription*', 'financial.payments.index', 'financial.incomes.index', 'financial.expenses.index') ? 'true' :
+       role="button" aria-expanded="{{ Request::routeIs(
+        'master.monthly_payment',
+         'financial.payments.index',
+          'financial.incomes.index',
+           'financial.expenses.index',
+           'financial.wallets.index',
+           'financial.categories.index',
+           'financial.transactions.index'
+           ) ? 'true' :
                        'false'}}"
        class="dropdown-toggle">
         <div class="">
@@ -36,7 +36,7 @@
                 <line x1="12" y1="1" x2="12" y2="23"></line>
                 <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
             </svg>
-            <span>Recebimentos</span>
+            <span>Gestão Financeira</span>
         </div>
         <div>
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -49,19 +49,23 @@
     <ul class="collapse submenu list-unstyled {{
                         Request::routeIs(
                          'master.monthly_payment',
-                         'master.payment.plans',
-                         'master.payment.subscription*',
                          'master.payment.report',
                          'financial.payments.index',
                          'financial.incomes.index',
-                         'financial.expenses.index'
+                         'financial.expenses.index',
+                         'financial.wallets.index',
+                         'financial.categories.index',
+                         'financial.transactions.index'
                          ) ? 'show' : ''}}"
         id="recebimentos">
-        <li class="{{ Request::routeIs('master.payment.plans') ? 'active' : '' }}">
-            <a href="{{route('master.payment.plans')}}"> Planos </a>
+        <li class="{{ Request::routeIs('financial.wallets.index') ? 'active' : '' }}">
+            <a href="{{ route('financial.wallets.index') }}"> Carteiras </a>
         </li>
-        <li class="{{ Request::routeIs('master.payment.subscription*') ? 'active' : '' }}">
-            <a href="{{route('master.payment.subscription')}}"> Assinaturas </a>
+        <li class="{{ Request::routeIs('financial.categories.index') ? 'active' : '' }}">
+            <a href="{{ route('financial.categories.index') }}"> Categorias </a>
+        </li>
+        <li class="{{ Request::routeIs('financial.transactions.index') ? 'active' : '' }}">
+            <a href="{{ route('financial.transactions.index') }}"> Lançamentos </a>
         </li>
         <li class="{{ Request::routeIs('financial.payments.index') ? 'active' : '' }}">
             <a href="{{route('financial.payments.index')}}"> Pagamentos </a>
@@ -72,12 +76,16 @@
         <li class="{{ Request::routeIs('financial.expenses.index') ? 'active' : '' }}">
             <a href="{{route('financial.expenses.index')}}"> Despesas </a>
         </li>
+        <li class="{{ Request::routeIs('financial.suppliers.index') ? 'active' : '' }}">
+            <a href="{{route('financial.suppliers.index')}}"> Fornecedores </a>
+        </li>
     </ul>
 </li>
 
-<li class="menu {{ Request::routeIs('master.financial-reports.*') ? 'active' : '' }}">
+<li class="menu {{ Request::routeIs('master.financial-reports.*', 'financial.reports*') ? 'active' : '' }}">
     <a href="#financial-reports" data-bs-toggle="collapse"
-       role="button" aria-expanded="{{ Request::routeIs('master.financial-reports.*') ? 'true' : 'false' }}"
+       role="button"
+       aria-expanded="{{ Request::routeIs('master.financial-reports.*', 'financial.reports*') ? 'true' : 'false' }}"
        class="dropdown-toggle">
         <div class="text-ellipsis" title="Relatórios Financeiro">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -97,11 +105,14 @@
             </svg>
         </div>
     </a>
-    <ul class="collapse submenu list-unstyled {{ Request::routeIs('master.financial-reports.*') ? 'show' : '' }}"
+    <ul class="collapse submenu list-unstyled {{ Request::routeIs('master.financial-reports.*', 'financial.reports*')
+     ? 'show' : '' }}"
         id="financial-reports">
         <li class="{{ Request::routeIs('master.financial-reports.monthly-billing') ? 'active' : '' }}">
             <a href="{{ route('master.financial-reports.monthly-billing') }}"> Faturamento Mensal </a>
         </li>
+        <li class="{{ Request::routeIs('financial.reports.dre') ? 'active' : '' }}">
+            <a href="{{ route('financial.reports.dre') }}"> Relatório DRE </a>
+        </li>
     </ul>
 </li>
-@endif

@@ -24,4 +24,25 @@ class EloquentTitleRepository extends BaseRepository implements TitleRepositoryI
             ->where('due_date', '<=', $date)
             ->get();
     }
+
+    public function save(Title $title): TitleModel
+    {
+        /** @var TitleModel $model */
+        $model = $this->model->updateOrCreate(
+            ['uuid' => $title->uuid],
+            [
+                'wallet_id' => $title->walletId,
+                'supplier_uuid' => $title->supplierUuid,
+                'type' => $title->type->value,
+                'currency' => $title->amount->currency->code,
+                'amount' => $title->amount->amount,
+                'due_date' => $title->dueDate,
+                'description' => $title->description,
+                'status' => $title->status->value,
+                'metadata' => $title->metadata,
+            ]
+        );
+
+        return $model;
+    }
 }

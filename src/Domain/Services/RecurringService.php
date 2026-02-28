@@ -26,6 +26,7 @@ class RecurringService
             $title = new Title(
                 uuid: Str::uuid()->toString(),
                 walletId: $schedule->walletId,
+                supplierUuid: null,
                 type: TitleType::RECEIVABLE,
                 amount: $schedule->amount,
                 dueDate: $schedule->nextRunAt,

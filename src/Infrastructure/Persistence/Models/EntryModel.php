@@ -38,4 +38,9 @@ class EntryModel extends Model
         // O model de categoria é referenciado diretamente, pois faz parte do núcleo do pacote.
         return $this->belongsTo(Category::class, 'category_uuid', 'uuid');
     }
+
+    public function supplier(): BelongsTo
+    {
+        return $this->belongsTo(Supplier::class, 'supplier_uuid', 'uuid');
+    }
 }

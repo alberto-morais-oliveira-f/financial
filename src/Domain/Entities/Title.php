@@ -12,6 +12,7 @@ class Title
     public function __construct(
         public readonly ?string $uuid,
         public readonly string $walletId,
+        public readonly ?string $supplierUuid,
         public readonly TitleType $type,
         public readonly Money $amount,
         public readonly DateTimeImmutable $dueDate,

@@ -53,6 +53,8 @@ class TransactionService
             $debitEntry = new Entry(
                 uuid: Str::uuid()->toString(),
                 walletId: $fromWallet->uuid,
+                categoryUuid: null,
+                supplierUuid: null,
                 type: EntryType::DEBIT,
                 amount: $amount,
                 beforeBalance: $fromWallet->balance,
@@ -62,6 +64,8 @@ class TransactionService
             $creditEntry = new Entry(
                 uuid: Str::uuid()->toString(),
                 walletId: $toWallet->uuid,
+                categoryUuid: null,
+                supplierUuid: null,
                 type: EntryType::CREDIT,
                 amount: $amount,
                 beforeBalance: $toWallet->balance,

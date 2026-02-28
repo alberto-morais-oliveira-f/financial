@@ -5,6 +5,7 @@ use Am2tec\Financial\Infrastructure\Http\Controllers\Web\WalletController;
 use Am2tec\Financial\Infrastructure\Http\Controllers\Web\TransactionController;
 use Am2tec\Financial\Infrastructure\Http\Controllers\Web\PaymentController;
 use Am2tec\Financial\Infrastructure\Http\Controllers\Web\CategoryController;
+use Am2tec\Financial\Infrastructure\Http\Controllers\Web\SupplierController;
 use Am2tec\Financial\Infrastructure\Http\Controllers\Web\ReportController;
 use Am2tec\Financial\Infrastructure\Http\Controllers\Web\IncomeController;
 use Am2tec\Financial\Infrastructure\Http\Controllers\Web\ExpenseController;
@@ -37,6 +38,9 @@ Route::group(['prefix' => config('financial.web.prefix', 'financial'), 'as' => '
 
     // Categories
     Route::resource('categories', CategoryController::class);
+
+    // Suppliers
+    Route::resource('suppliers', SupplierController::class);
 
     // Reports
     Route::get('reports/dre', [ReportController::class, 'dre'])->name('reports.dre');

@@ -27,6 +27,9 @@ class ExpenseDataTable extends DataTable
             ->addColumn('wallet_name', function (EntryModel $entry) {
                 return $entry->wallet?->name ?? '-';
             })
+            ->addColumn('supplier_name', function (EntryModel $entry) {
+                return $entry->supplier?->name ?? '-';
+            })
             ->editColumn('created_at', function (EntryModel $entry) {
                 return $entry->created_at->format('d/m/Y H:i:s');
             })
@@ -36,7 +39,7 @@ class ExpenseDataTable extends DataTable
     public function query(EntryModel $model): QueryBuilder
     {
         return $model->newQuery()
-            ->with(['category', 'wallet'])
+            ->with(['category', 'wallet', 'supplier'])
             ->where($model->getTable() . '.type', 'DEBIT');
     }
 
@@ -94,6 +97,7 @@ class ExpenseDataTable extends DataTable
             Column::make('amount')->title('Valor'),
             Column::make('category_name')->title('Categoria')->name('category.name'),
             Column::make('wallet_name')->title('Carteira')->name('wallet.name'),
+            Column::make('supplier_name')->title('Fornecedor')->name('supplier.name'),
             Column::make('created_at')->title('Data'),
             Column::computed('action')
                 ->title('Ações')

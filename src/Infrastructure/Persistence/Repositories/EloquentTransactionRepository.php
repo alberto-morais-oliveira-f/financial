@@ -16,12 +16,12 @@ class EloquentTransactionRepository extends BaseRepository implements Transactio
         parent::__construct($model);
     }
 
-    public function register(Transaction $transaction): TransactionModel
+    public function save(Transaction $transaction): TransactionModel
     {
         return DB::transaction(function () use ($transaction) {
             /** @var TransactionModel $model */
             $model = $this->updateOrCreate(
-                ['id' => $transaction->uuid],
+                ['uuid' => $transaction->uuid],
                 [
                     'reference_code' => $transaction->referenceCode,
                     'description' => $transaction->description,
@@ -33,10 +33,12 @@ class EloquentTransactionRepository extends BaseRepository implements Transactio
 
             foreach ($transaction->getEntries() as $entry) {
                 EntryModel::updateOrCreate(
-                    ['id' => $entry->uuid],
+                    ['uuid' => $entry->uuid],
                     [
-                        'transaction_id' => $model->id,
+                        'transaction_id' => $model->uuid,
                         'wallet_id' => $entry->walletId,
+                        'category_uuid' => $entry->categoryUuid,
+                        'supplier_uuid' => $entry->supplierUuid,
                         'type' => $entry->type->value,
                         'amount' => $entry->amount->amount,
                         'before_balance' => $entry->beforeBalance?->amount,
@@ -45,13 +47,7 @@ class EloquentTransactionRepository extends BaseRepository implements Transactio
                 );
             }
 
-            $savedTransaction = $this->find($transaction->uuid);
-
-            if (!$savedTransaction) {
-                throw new RuntimeException("Failed to retrieve the transaction after saving.");
-            }
-
-            return $savedTransaction;
+            return $model->load('entries.category', 'entries.wallet', 'entries.supplier');
         });
     }
 }

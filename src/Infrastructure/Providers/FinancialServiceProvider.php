@@ -56,6 +56,7 @@ class FinancialServiceProvider extends ServiceProvider
         ], 'financial-config');
 
         $this->loadViewsFrom(__DIR__ . '/../../../resources/views', 'financial');
+        $this->loadTranslationsFrom(__DIR__ . '/../../../resources/lang', 'financial');
 
         $this->publishes([
             __DIR__ . '/../../../resources/views' => resource_path('views/vendor/financial'),
@@ -162,6 +163,7 @@ class FinancialServiceProvider extends ServiceProvider
         $this->app->bind(RefundRepositoryInterface::class, EloquentRefundRepository::class);
         $this->app->bind(DreRepositoryInterface::class, EloquentDreRepository::class);
         $this->app->bind(CategoryRepositoryInterface::class, EloquentCategoryRepository::class);
+        $this->app->bind(\Am2tec\Financial\Domain\Contracts\SupplierRepositoryInterface::class, \Am2tec\Financial\Infrastructure\Persistence\Repositories\EloquentSupplierRepository::class);
     }
 
     protected function registerServices(): void
